@@ -1,0 +1,54 @@
+/*	
+	Estilo para la muestra en movil o tablet
+ */
+
+
+
+/* Movil */
+@media screen and (max-width: 600px){
+	#fotoFecha{
+		flex-direction: column;
+	}
+	
+	#contenedor_imagen_altitud{
+		margin-top: 10%;
+	}
+
+}
+
+/* Tablet */
+@media screen and (max-width: 1100px){
+
+	#login {
+		width: 50%;
+	}
+	
+	#ortoParcela {
+		width: 100%;
+	}
+
+	
+}
+
+
+/* Tablet */
+@media screen and (max-width: 1600px){
+	
+	.row #OrtoImagen {
+		order: 1;
+		width: 100%;
+		margin-bottom: 2%;
+	}
+	
+	.row #Informacion {
+		order: 2;
+		width: 100%;
+	}
+	
+	#imagen_altura {
+		width: 50%;
+	}
+
+	
+}
+

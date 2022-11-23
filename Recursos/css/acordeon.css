@@ -1,0 +1,96 @@
+/*Código de estilo correspondiente a los desplegables de fotos e información del modelado*/
+
+.input-acordeon {
+  position: absolute;
+  opacity: 0; /* Oculta el boton del checkbox */
+  z-index: -1;
+}
+
+/* Información del boton desplegable */
+.tab {
+  width: 100%;
+  color: white; /*Color de letra*/
+  overflow: hidden; /*Oculta el contenido del desplegable*/
+  border-radius: 8px; /*Radio de esquina del desplegable*/
+  
+ /* box-shadow: 0 4px 4px -2px rgba(0, 0, 0, 0.5); */ /*Le da sombra al rango del desplegable*/
+}
+
+/* Información de los botones desplegables internos a un principal */
+.tab-2 {
+  width: 100%;
+  color: white; /*Color de letra*/
+  overflow: hidden; /*Oculta el contenido del desplegable*/
+  
+  /* box-shadow: 0 4px 4px -2px rgba(0, 0, 0, 0.5); */ /*Le da sombra al rango del desplegable*/
+}
+
+.tab-label {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em; /*Margen del desplegable alrededor del texto del mismo*/
+  background: #008f39; /* Color del deplegable */
+  font-weight: bold; /*Negrita al contenido*/
+  cursor: pointer; /*Cambia el cursor del raton por la imagen de clicable*/
+}
+
+/* Color que se pone al pasar por encima del deplegable */
+.tab-label:hover {
+  background: #1a252f;
+}
+
+/* Color que se pone al pasar por encima de un deplegable secundario */
+#secundario:hover {
+  background: #1a2563;
+}
+
+/*Contenido interno del boton desplegable*/
+.tab-label::after {
+  content: "❯"; /*Flecha final del desplegable*/
+  width: 1em;
+  height: 1em;
+  text-align: center;
+  transition: all 1s; /*Tiempo de transición de apertura*/
+}
+
+/*Contenido del desplegable principal al expandirlo*/
+.tab-content {
+  max-height: 0;
+  color: #008f39; /*Color del texto*/
+  background: white; /*Color del fondo*/
+  transition: all 1s;
+}
+
+/* Color que se queda al clicar en un desplegable principal */
+input:checked + .tab-label {
+  background: #1a252f;
+}
+
+/*Giro de la flecha desplegable que indica que se esta abriendo el mismo*/
+input:checked + .tab-label::after {
+  transform: rotate(90deg);
+}
+
+/*Altura máxima del contenido del desplegable y margenes del mismo*/
+input:checked ~ .tab-content {
+  max-height: 1200vh;
+  padding: 0 0 0 1em;
+}
+
+
+/* Color que se queda al clicar en un desplegable secundario */
+input:checked + #secundario{
+  background: #1a2563;
+}
+
+.tab-close {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1em;
+  font-size: 0.75em;
+  background: #2c3e50;
+  cursor: pointer;
+}
+.tab-close:hover {
+  background: #1a252f;
+}

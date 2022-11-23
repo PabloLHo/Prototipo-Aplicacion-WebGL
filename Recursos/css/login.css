@@ -1,0 +1,73 @@
+body {
+	margin: 0;
+	padding: 0;	
+}
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50% ,-50%);
+  background-color: rgba(30, 144, 255, 0.7);
+  border-radius: 5px;
+  width: 20%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  z-index: 2000;
+}
+
+.container a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 100%;
+  font-weight: 500;
+ 
+}
+
+.container input {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 75%;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin: 0 auto 10px auto;	
+  font-size: 100%;
+  color: white;
+  font-weight: 300;
+}
+
+
+.container input:hover{
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.container input:focus{
+  text-indent: 0px;
+  width: 85%;
+  color: black;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.container input::placeholder {
+	color: #000000;
+	font-weight: bold;
+}
+
+.container input:focus::placeholder {
+	color: rgba(255, 255, 255, 0);
+}
+
+.a-link a {
+  color: #fff;
+  font-size: 17px;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+.a-link a:hover {
+  line-height: 1.5;
+  font-weight: 300;
+  color: #57F5FF;
+  text-shadow: 1px 1px 4px black;
+}
