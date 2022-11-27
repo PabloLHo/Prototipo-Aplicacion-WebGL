@@ -25,9 +25,6 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<link rel="stylesheet" type="text/css" href="Recursos/css/bootstrap.min.css" media="all">
 		
 		<!-- CSS propio -->
-		<link rel="stylesheet" href="Recursos/css/botones.css">
-		<link rel="stylesheet" href="Recursos/css/styleOpciones.css">
-		<link rel="stylesheet" href="Recursos/css/styleTabla.css">
 		<link rel="stylesheet" href="Recursos/css/renderCanvas.css">
 
 	
@@ -58,6 +55,8 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<!-- Javascript propio -->
 		<script src="Recursos/js/funcionesModelado.js"></script>
 		<script src="Recursos/js/escena.js"></script>
+		<script src="Recursos/js/controlEscena.js"></script>
+		<script src="Recursos/js/recorte.js"></script>
 
 		
 

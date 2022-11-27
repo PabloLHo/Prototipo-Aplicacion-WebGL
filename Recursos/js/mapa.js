@@ -58,31 +58,33 @@ var lyrSatelite = new ol.layer.Tile({
 })
 
 var lyrTerrain = new ol.layer.Tile({
-	title: "Terreno",
+	title: "Cartografía",
 	type: 'base',
 	visible: false,
 	source: new ol.source.Stamen({layer: "terrain"}),
+})
+
+var grupoCapas = new ol.layer.Group({
+			title:'Capas',
+			fold: 'open',
+            layers:[
+				lyrMarmolejoParcela,
+				// lyrJaenParcela,
+            ]
 })
 
 var map = new ol.Map({
 	target: 'map',
 	layers: [
 		new ol.layer.Group({
-            title:'Mapas base',
+            title:'Mapas',
             layers:[
 				lyrSatelite,
 				lyrTerrain
             ]
         }),
-		new ol.layer.Group({
-			title:'Capas superpuestas',
-			fold: 'open',
-            layers:[
-				lyrMarmolejoParcela,
-				// lyrJaenParcela,
-            ]
-		})
-		
+		grupoCapas,
+	
 	],
 	view: new ol.View({
 		center: [-462469.89837683, 4587686.25458488],
@@ -92,14 +94,18 @@ var map = new ol.Map({
 	})
 })
 
+console.log(grupoCapas);
+
 var layerSwitcher = new ol.control.LayerSwitcher({
-    tipLabel: 'Leyenda', // Optional label for button
+    activationMode: 'click',
+	startActive: true,
     groupSelectStyle: 'children' // Can be 'children' [default], 'group' or 'none'
 });
 
 map.addControl(layerSwitcher);
 map.on('singleclick', function(evt) {
 	map.forEachFeatureAtPixel(evt.pixel, function(feature, layer){
+		console.log(feature.values);
 		if(feature.values_.CD_PARCELA == "211")
 			location.href = "InformacionParcela.php?modelo=Parcela_1";
 	})
@@ -138,7 +144,7 @@ map.on('pointermove', function (e) {
 
 
 function actualiza(){ 
-	if(map.getView().getZoom() > 11){
+	if(map.getView().getZoom() > 15){
 		lyrSatelite.setVisible(true);
 		lyrTerrain.setVisible(false);
 	}else{

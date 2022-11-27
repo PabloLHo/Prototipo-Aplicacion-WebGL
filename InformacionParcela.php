@@ -43,7 +43,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 
 		<!-- Javascript propio -->
 		<script src="Recursos/js/funcionesInformacion.js"></script>
-		<!-- <script src="Recursos/js/responsive.js"></script> -->
+
 		
 		<title>Gemelo Digital</title>
 	

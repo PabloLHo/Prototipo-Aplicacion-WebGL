@@ -54,8 +54,8 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<script src="Recursos/js/funcionesInformacion.js"></script>
 		<script src="Recursos/js/funcionesModelado.js"></script>
 		<script src="Recursos/js/escena.js"></script>
-		<script src="Recursos/js/controlOpciones.js"></script>
-		
+		<script src="Recursos/js/recorte.js"></script>
+		<script src="Recursos/js/controlEscena.js"></script>
 
 		<!-- Javascript propio -->
 		

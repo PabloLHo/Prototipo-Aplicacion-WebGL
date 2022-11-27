@@ -22,13 +22,14 @@ if(time() - $_SESSION['tiempo'] > 43200){
 	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <!-- Bootstrap CSS -->
-	<!-- <link rel="stylesheet" type="text/css" href="Recursos/css/bootstrap.css" media="all"> -->
+	<link rel="stylesheet" href="Recursos/css/ol-layerswitcher.css" type="text/css">
 	<link rel="stylesheet" type="text/css" href="Recursos/css/bootstrap.min.css" media="all">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="Recursos/css/mapa.css" media="all">
-	<link rel="stylesheet" href="http://raw.githack.com/walkermatt/ol-layerswitcher/master/dist/ol-layerswitcher.css" type="text/css">
+	<link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
 	
-
+	
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
 	<script src="Recursos/js/Externo/jquery-6.0.0-min.js"></script>
 	<script src="Recursos/js/Externo/bootstrap.bundle.js"></script>
 	<script src="Recursos/js/Externo/bootstrap.js"></script>
@@ -37,12 +38,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 
 	<!-- Babylon JavaScript -->
 		
-	<!-- JavaScript propio -->	
-	<script src="Recursos/js/funciones.js"></script>
-		
-	<link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
-    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
-	<script src="http://raw.githack.com/walkermatt/ol-layerswitcher/master/dist/ol-layerswitcher.js"></script>
+	<script src="Recursos/js/Externo/ol-layerswitcher.js"></script>
 	
 	
     <title>Gemelo Digital</title>
@@ -72,30 +68,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 			<div id="map" class="map"></div>
 			<script type="text/javascript" src="Recursos/js/mapa.js"></script>	
 		</section>		
-		
-		<!-- Botones Lugares -->
-		<section id="lugares" class="text-center text-white call-to-action" style="background:url(Recursos/imagenes/mapa_terreno.png) no-repeat center center;background-size:contain;">
-			<h5> &nbsp </h5>
-				<div style="display:flex; color: black" class="justify-content-center align-items-center container-fluid"> 
-					<h1>Lugares con parcelas</h1>	
-				</div>
-				<h5> &nbsp </h5>
-				<div id="botonesLugar" style="display:flex;" class="justify-content-center align-items-center container-fluid"></div>
-				<h5> &nbsp </h5>
-				<button  id="botonVolver" class='btn btn-primary btn-lg justify-content-center align-items-center container-fluid' onclick="seleccionaOpciones();"> &lt Volver </button>
-		</section>
-   
-		<!-- <section class="container-fluid"> -->
-			<!-- <nav class="py-2 bg-light border-bottom"> -->
-				<!-- <div class="d-flex flex-wrap align-items-center" style="margin-left: 50px; margin-right: 20px;"> -->
-				  <!-- <ul class="nav me-auto"> -->
-					<!-- <li class="nav-item"><a href="Home.html?seccion=mapa" class="nav-link link-dark px-2">Mapa</a></li> -->
-					<!-- <li class="nav-item"><a href="Home.html?seccion=informacion" class="nav-link link-dark px-2" >Información</a></li> -->
-					<!-- <li class="nav-item"><a href="Home.html?seccion=lugares" class="nav-link link-dark px-2" >Lugares</a></li> -->
-				  <!-- </ul> -->
-				<!-- </div> -->
-			<!-- </nav> -->
-		<!-- </section> -->
+  
 		
 		<section id="Informacion" class="text-center bg-light features-icons container-fluid">
 			<div>
