@@ -53,8 +53,7 @@ function seleccionRectangular(scene, camera, advancedTexture) {
 				}	
 			}else if(eventData.type === BABYLON.PointerEventTypes.POINTERDOUBLETAP){
 				finSeleccion = true;
-				coordenadas.pop();
-				coordenadas.pop();
+				limpiarCoordenadas();
 				coordenadas.push(coordenadas[0]);
 				options = {
 						points: coordenadas,
@@ -69,6 +68,21 @@ function seleccionRectangular(scene, camera, advancedTexture) {
     });
 	
 }
+
+function limpiarCoordenadas(){
+	
+	for(var i = 0; i < coordenadas.length; i++){
+		for(var x = i + 1; x < coordenadas.length; x++){
+			if(coordenadas[i].x.toFixed(4) == coordenadas[x].x.toFixed(4) && coordenadas[i].z.toFixed(4) == coordenadas[x].z.toFixed(4)){
+				x = x-1;
+				coordenadas.splice(x,1);
+			}
+		}
+	}
+	
+}
+
+
 
 //Método punto en poligono, se deben recorrer las coordenadas en sentido anti-horario
 //coordenadas = [new BABYLON.Vector3(2, 0, -2), new BABYLON.Vector3(0, 0, 2), new BABYLON.Vector3(-2, 0, -2)];

@@ -9,15 +9,6 @@ const estiloInteriorCapa = new ol.style.Stroke({
 	width: 1.0
 });
 
-// var lyrMarmolejoParcela = new ol.layer.Vector({
-  // title: 'JaenVector',
-  // visible: true,
-  // source: new ol.source.Vector({
-	// format: new ol.format.GeoJSON(),
-	// url:"http://localhost:8080/geoserver/ParcelasJaen/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasJaen%3Aparcelasjaen&outputFormat=application%2Fjson"
-  // }),
-// })
-
 var lyrMarmolejoParcela = new ol.layer.Vector({
 	title: 'Parcelas Marmolejo',
 	visible: false,
@@ -30,22 +21,6 @@ var lyrMarmolejoParcela = new ol.layer.Vector({
 		stroke: estiloInteriorCapa
 	})
 })
-
-
-// var lyrJaenParcela = new ol.layer.Tile({
-	// title:'Parcelas Jaen',
-	// visible: false,
-	// source:new ol.source.TileWMS({
-		// url:'http://localhost:8080/geoserver/wms?',
-		// params:{
-			// VERSION:'1.1.1',
-			// FORMAT:'image/png',
-			// TRANSPARENT:true,
-			// LAYERS:'ParcelasJaen:parcelasjaen'
-		// }
-	// })
-// })
-
 
 var lyrSatelite = new ol.layer.Tile({
 	title:'Satelite',
@@ -61,16 +36,15 @@ var lyrTerrain = new ol.layer.Tile({
 	title: "Cartografía",
 	type: 'base',
 	visible: false,
-	source: new ol.source.Stamen({layer: "terrain"}),
+	source: new ol.source.OSM(),
 })
 
 var grupoCapas = new ol.layer.Group({
-			title:'Capas',
-			fold: 'open',
-            layers:[
-				lyrMarmolejoParcela,
-				// lyrJaenParcela,
-            ]
+	title:'Capas',
+	fold: 'open',
+    layers:[
+		lyrMarmolejoParcela,
+    ]
 })
 
 var map = new ol.Map({
@@ -93,8 +67,6 @@ var map = new ol.Map({
 		minZoom: 3,
 	})
 })
-
-console.log(grupoCapas);
 
 var layerSwitcher = new ol.control.LayerSwitcher({
     activationMode: 'click',
