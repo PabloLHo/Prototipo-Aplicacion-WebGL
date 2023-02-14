@@ -39,6 +39,7 @@ if( $clave != null &&  time() - $_SESSION['tiempo'] < 43200){
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js'></script>
 		
+	<script src="Recursos/js/Modelo/cargaModelo.js"></script>
 	<script src="Recursos/js/Modelo/Login/modeladoLogin.js"></script>
 
 

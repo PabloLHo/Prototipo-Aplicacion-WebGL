@@ -41,5 +41,5 @@ window.addEventListener("resize", function () {
 	modelo: El nombre de la función de visualización a la que llamar
 */
 const createScene = (modelo) => {
-	return window[modelo](nombre_Modelo);
+	return window[modelo](nombre_modelo);
 }

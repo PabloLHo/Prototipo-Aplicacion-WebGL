@@ -22,7 +22,7 @@ window.onload = function() {
 			valor = url.substring(variable_pos + variable_may.length + 1, url.length);
 		}
 	} else{
-		alert("NO_ENCONTRADO");
+		nombre_modelo = "";
 	}
 	
 	valor = valor.toLowerCase();
