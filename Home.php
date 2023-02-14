@@ -22,23 +22,24 @@ if(time() - $_SESSION['tiempo'] > 43200){
 	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <!-- Bootstrap CSS -->
+	<link rel="stylesheet" type="text/css" href="Recursos/css/dashboard.css" media="all">
+	<link rel="stylesheet" href="Recursos/fonts/fontawesome-all.min.css">
 	<link rel="stylesheet" href="Recursos/css/ol-layerswitcher.css" type="text/css">
 	<link rel="stylesheet" type="text/css" href="Recursos/css/bootstrap.min.css" media="all">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="Recursos/css/mapa.css" media="all">
 	<link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+	<link rel="stylesheet" type="text/css" href="Recursos/js/Mapa/ol-ext/ol-ext.css" media="all">
+	
 	
 	
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+	<script src="Recursos/js/Mapa/ol-ext/ol-ext.js"></script>
 	<script src="Recursos/js/Externo/jquery-6.0.0-min.js"></script>
-	<script src="Recursos/js/Externo/bootstrap.bundle.js"></script>
-	<script src="Recursos/js/Externo/bootstrap.js"></script>
-	<script src="Recursos/js/Externo/bootstrap.min.js"></script>
-
-
-	<!-- Babylon JavaScript -->
-		
-	<script src="Recursos/js/Externo/ol-layerswitcher.js"></script>
+	<script src="Recursos/js/Externo/Bootstrap/bootstrap.bundle.js"></script>
+	<script src="Recursos/js/Externo/Bootstrap/bootstrap.js"></script>
+	<script src="Recursos/js/Externo/Bootstrap/bootstrap.min.js"></script>
+	<script src="Recursos/js/Mapa/ol-layerswitcher.js"></script>
 	
 	
     <title>Gemelo Digital</title>
@@ -46,27 +47,42 @@ if(time() - $_SESSION['tiempo'] > 43200){
   
   <body>
 
-	
-	
 	<!-- Cabecera -->
 	<section class="container-fluid">
-		<section class="container-fluid">
-			<div>
-				<header class="d-flex flex-wrap justify-content-center " style="height: 120px;background-color: rgb(0,187,45);">
+		<section>
+			<nav class="navbar navbar-expand shadow topbar static-top bg-success" style="height: 10%">
+				<div class="container-fluid" >
 					<a href="Home.php" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-						<img src="Recursos/imagenes/logo.png"  alt=".logo" height="75" width="120" hspace="40" align="left">
-						<span class="fs-4 text-white">Olivar de Jaén</span>
+						<img src="Recursos/imagenes/logo.png"  alt=".logo" width="auto" height="75px" hspace="40" align="left">
+						<span class="fs-4 text-dark"><b>El olivar en Jaén</b></span>
 					</a>
-					<form action="Recursos/php/cierreSesion.php" method="post">
-						<button>Cerrar Sesión</button>
-					</form>
-				</header>
-			</div>
+					<ul class="navbar-nav flex-nowrap ms-auto">
+						<div class="d-none d-sm-block topbar-divider"></div>
+						<li class="nav-item dropdown no-arrow">
+							<div class="nav-item dropdown no-arrow">
+								<a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
+									<span class="d-none d-lg-inline me-2 text-dark-600 small"><b> <?php echo $clave;?> </b></span>
+									<img class="border rounded-circle img-profile" src="Recursos/imagenes/dron.png">
+								</a>
+								<div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
+									<a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a>
+									<a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a>
+									<a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+									<div class="dropdown-divider"></div>
+									<form action="Recursos/php/cierreSesion.php" method="post">
+										<button class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Cerrar Sesión</button>
+									</form>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
 		</section>
 		<!--Mapa --> 
-		<section id="mapa" class="container-fluid">
+		<section id="mapa">
 			<div id="map" class="map"></div>
-			<script type="text/javascript" src="Recursos/js/mapa.js"></script>	
+			<script type="text/javascript" src="Recursos/js/Mapa/mapa.js"></script>
 		</section>		
   
 		

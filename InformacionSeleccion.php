@@ -51,11 +51,10 @@ if(time() - $_SESSION['tiempo'] > 43200){
 
 
 		<!-- Javascript propio -->
-		<script src="Recursos/js/funcionesInformacion.js"></script>
-		<script src="Recursos/js/funcionesModelado.js"></script>
-		<script src="Recursos/js/escena.js"></script>
-		<script src="Recursos/js/recorte.js"></script>
-		<script src="Recursos/js/controlEscena.js"></script>
+		<script src="Recursos/js/Informacion/funcionesInformacion.js"></script>
+		<script src="Recursos/js/Modelo/funcionesModelado.js"></script>
+		<script src="Recursos/js/Modelo/escena.js"></script>
+		<script src="Recursos/js/Modelo/recorte.js"></script>
 
 		<!-- Javascript propio -->
 		
@@ -121,14 +120,17 @@ if(time() - $_SESSION['tiempo'] > 43200){
 								<li class="nav-item dropdown no-arrow">
 									<div class="nav-item dropdown no-arrow">
 										<a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
-											<span class="d-none d-lg-inline me-2 text-gray-600 small">Pablo</span>
+											<span class="d-none d-lg-inline me-2 text-gray-600 small"><b> <?php echo $clave;?> </b></span>
 											<img class="border rounded-circle img-profile" src="Recursos/imagenes/dron.png">
 										</a>
-										<div class="dropdown-menu shadow dropdown-menu-end ">
+										<div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
+											<a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a>
+											<a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a>
+											<a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+											<div class="dropdown-divider"></div>
 											<form action="Recursos/php/cierreSesion.php" method="post">
-												<button> cerrar sesion </button>
+												<button class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Cerrar Sesión</button>
 											</form>
-												
 										</div>
 									</div>
 								</li>

@@ -33,16 +33,16 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		
 		<!-- Javascript librerias externas -->
 		<script src="Recursos/js/Externo/jquery-6.0.0-min.js"></script>
-		<script src="Recursos/js/Externo/bootstrap.bundle.js"></script>
-		<script src="Recursos/js/Externo/bootstrap.js"></script>
+		<script src="Recursos/js/Externo/Bootstrap/bootstrap.bundle.js"></script>
+		<script src="Recursos/js/Externo/Bootstrap/bootstrap.js"></script>
 		<script src="Recursos/js/Externo/html2pdf.js"></script>
-		<script src="Recursos/js/Externo/bootstrap.min.js"></script>
+		<script src="Recursos/js/Externo/Bootstrap/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 		
 
 		<!-- Javascript propio -->
-		<script src="Recursos/js/funcionesInformacion.js"></script>
+		<script src="Recursos/js/Informacion/funcionesInformacion.js"></script>
 
 		
 		<title>Gemelo Digital</title>
@@ -108,14 +108,17 @@ if(time() - $_SESSION['tiempo'] > 43200){
 									<li class="nav-item dropdown no-arrow">
 										<div class="nav-item dropdown no-arrow">
 											<a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
-												<span class="d-none d-lg-inline me-2 text-gray-600 small">Pablo</span>
+												<span class="d-none d-lg-inline me-2 text-gray-600 small"><b> <?php echo $clave;?> </b></span>
 												<img class="border rounded-circle img-profile" src="Recursos/imagenes/dron.png">
 											</a>
-											<div class="dropdown-menu shadow dropdown-menu-end ">
+											<div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
+												<a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a>
+												<a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a>
+												<a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+												<div class="dropdown-divider"></div>
 												<form action="Recursos/php/cierreSesion.php" method="post">
-													<button> cerrar sesion </button>
+													<button class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Cerrar Sesión</button>
 												</form>
-													
 											</div>
 										</div>
 									</li>
