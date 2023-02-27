@@ -2,16 +2,42 @@
 var camara;
 var camaraCenital;
 var escena;
+var parcela = "";
 var tipoCamara = "perspectiva";
 var tipoModelo = "nube";
+var polygon;
+var nubeExists = true;
 
-function controlEscena(camera, cameraCenital, scene){
+
+
+function controlEscena(camera, cameraCenital, scene, _parcela) {
+
 	camara = camera;
 	camaraCenital = cameraCenital;
-	escena = scene;	
+	escena = scene;
+	parcela = _parcela;
+	console.log(nube.length);
+	if (nube.length == 0) {
+		system["formato"] = "text";
+		creacionPoligono(parcela, detectado);
+		nubeExists = false;
+	}
+
 }
 
 var gui = new dat.GUI({name: 'GUI', width: 250 });
+
+const smallDevice = window.matchMedia("(min-width: 576px)");
+
+smallDevice.addListener(handleDeviceChange);
+
+function handleDeviceChange(e) {
+  if (e.matches) gui.open();
+  else gui.close();
+}
+
+// Run it initially
+handleDeviceChange(smallDevice);
 
 var system = {
     Zoom: 175,
@@ -38,16 +64,9 @@ var parameters = {
 
 var first = gui.addFolder("Camara");
 first.add(parameters, "Tipo", {Cenital: "cenital", Perspectiva: "perspectiva", Rotatoria: "rotar"}).name("Tipo Visión").listen().onChange(function(){ setChecked()});
-// var pos1 = first.add(parameters, 'cenital').name('Visión Cenital').listen().onChange(function(){setChecked("cenital")});
-// var neg1 = first.add(parameters, 'perspectiva').name('Visión Perspectiva').listen().onChange(function(){setChecked("perspectiva")});
-// var neu1 = first.add(parameters, 'rotatoria').name('Visión rotatoria').listen().onChange(function(){setChecked("rotatoria")});
 first.open();
 
 function setChecked(){
-	// for (let param in parameters){
-		// parameters[param] = false;
-	// }
-	// parameters[prop] = true;
 	if(parameters["Tipo"] == "perspectiva" || parameters["Tipo"] == "rotar"){
 		if(tipoCamara == "cenital"){
 			f_b.remove(f_b.__controllers[f_b.__controllers.length - 1]);
@@ -79,6 +98,10 @@ function setChecked(){
 	tipoCamara = parameters["Tipo"];
 	centrado();
 }
+
+var deteccion = gui.addFolder('Detección Objetos');
+let deteccionObjetos = {Detecc: function(){ detectar() }};
+deteccion.add(deteccionObjetos,'Detecc').name("Detectar Olivos");
 	
 	
 let centrarVista = {Centrar: function(){ centrado() }};
@@ -91,7 +114,8 @@ gui.add(irInformacion,'Información').name("Ir Información");
 	
 let volverInformacion = {Volver: function(){ volverPagInformacion() }};
 gui.add(volverInformacion,'Volver').name("Volver Información");
-	
+
+
 
 	
 
@@ -103,6 +127,7 @@ function aplicarZoom(){
 		if(tipoCamara == "cenital"){
 			camaraCenital.position = new BABYLON.Vector3(0,system["Zoom"],0);
 		}else{
+			/*camara.radius = 30625 * 1 / system["Zoom"];*/
 			camara.radius = system["Zoom"];
 		}
 	}
@@ -229,37 +254,71 @@ function eliminarSeleccion(){
 		
 }
 
-function cambioModelo(){
-	if(system["formato"] == "nube"){
-		ground.dispose();
-		if(tipoModelo != "combi"){
-			creacionParcela(escena);			
+function cambioModelo() {
+	if (nubeExists) {
+		if (system["formato"] == "nube") {
+			polygon.dispose();
+			if (tipoModelo != "combi") {
+				creacionParcela(escena);
+			}
+			tipoModelo = "nube";
+		} else if (system["formato"] == "text") {
+			if (system["seleccion"] == true) {
+				eliminarRecorte();
+			}
+			system["seleccion"] = false;
+			pcs.dispose();
+			if (tipoModelo != "combi") {
+				creacionPoligono(parcela, detectado);
+			}
+			tipoModelo = "text";
+		} else {
+			if (tipoModelo == "nube") {
+				creacionPoligono(parcela, detectado);
+			} else {
+				creacionParcela(escena);
+			}
+			tipoModelo = "combi";
 		}
-		tipoModelo = "nube";
-	}else if(system["formato"] == "text"){
-		if(system["seleccion"] == true){
-			eliminarRecorte();
-		}
-		system["seleccion"] = false;
-		pcs.dispose();
-		if(tipoModelo != "combi"){
-			var groundMaterial = new BABYLON.StandardMaterial("ground", escena);
-			groundMaterial.diffuseTexture = new BABYLON.Texture("Recursos/imagenes/ParcelaMarmolejo.jpg", escena);
-	
-			ground = new BABYLON.MeshBuilder.CreateGround("ground", {height: 40, width: 126, subdivisions: 4});
-			ground.material = groundMaterial;			
-		}
-		tipoModelo = "text";
-	}else{
-		tipoModelo = "combi";
-		if(tipoModelo == "nube"){
-			var groundMaterial = new BABYLON.StandardMaterial("ground", escena);
-			groundMaterial.diffuseTexture = new BABYLON.Texture("Recursos/imagenes/ParcelaMarmolejo.jpg", escena);
-		
-			ground = new BABYLON.MeshBuilder.CreateGround("ground", {height: 40, width: 126, subdivisions: 4});
-			ground.material = groundMaterial;
-		}else{
-			creacionParcela(escena);
-		}
-	}
+	} else {
+		system["formato"] = "text";
+    }
 }
+
+function detectar(){
+	//ejecucion();
+
+	var valores = $.ajax({
+		url: 'Recursos/Scripts/Deteccion_Olivos/Debug/deteccion.php',
+		data: { parcela: parcela },
+		dataType: 'text',
+		async: false
+	}).responseText;
+	limites = valores.split("/");
+	detectado = true;
+	if (system["formato"] == "text") {
+		creacionPoligono(parcela, detectado);
+	}
+	aux = limites[3].split("-");
+	olivos = []
+	for (var i = 0; i < aux.length - 1; i++) {
+		olivos.push(new BABYLON.Vector2(parseFloat(aux[i].split(",")[0].split("[")[1]), parseFloat(aux[i].split(",")[1].split("]")[0])));
+	}
+
+	posicionamiento(olivos, limites[1], limites[2]);
+}
+
+function ajuste() {
+	if (tipoCamara != "cenital") {
+		system["Zoom"] = camara.radius;
+		system["rotationX"] = camara.beta;
+		system["rotationY"] = camara.alpha;
+	} else {
+		system["Zoom"] = camaraCenital.position.y;
+		system["moverX"] = camaraCenital.position.x;
+		system["moverY"] = camaraCenital.position.z;
+	}
+
+}
+
+setInterval(ajuste, 100);

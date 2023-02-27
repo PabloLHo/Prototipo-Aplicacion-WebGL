@@ -58,7 +58,8 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		
 		<script src="Recursos/js/Modelo/escena.js"></script>
 		<script src="Recursos/js/Modelo/Control/recorte.js"></script>
-
+		<script type="text/javascript" src="Recursos/js/openCV/oliveTreeDetection.js"></script>
+		<script src="Recursos/js/OpenCV/OpenCV-4.7.0.js" type="text/javascript"></script>
 		
 
 		<title>Gemelo Digital</title>
@@ -68,7 +69,6 @@ if(time() - $_SESSION['tiempo'] > 43200){
 	<body>
 	
 		<!-- Sección con toda la interfaz -->		
-			<script src="Recursos/js/Modelo/cargaModelo.js"></script>
 			<script src="Recursos/js/Modelo/Control/gui.js"></script>
 			
 			<!-- Modelado -->
@@ -78,6 +78,11 @@ if(time() - $_SESSION['tiempo'] > 43200){
 					<script src="Recursos/js/Modelo/cargaBabylon.js"></script>
 				</div>
 			</section>
+
+			<div class="inputoutput">
+				<img id="imageSrc" src="Recursos/ortofotos/Marmolejo_O_1477851258.jpg" style="display: none">
+				<canvas id="canvasOutput" style="display: none" ></canvas>
+			</div>
 
 			
 		

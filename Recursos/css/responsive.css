@@ -23,6 +23,12 @@
 		width: 50%;
 	}
 	
+	.container-nombre{
+		top: 60%;
+		left: 10%;
+		width: 30%;
+	}
+	
 	#ortoParcela {
 		width: 100%;
 	}

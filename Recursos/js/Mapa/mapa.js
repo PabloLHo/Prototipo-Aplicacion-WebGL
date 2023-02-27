@@ -1,6 +1,5 @@
 /*JS encargado de creación y actualización de los listener para las acciones ocurridas al cambio de tamaños de ventana*/
 
-
 const estiloCapa = new ol.style.Fill({
 	color: [255,0,0,0]
 });
@@ -98,18 +97,20 @@ var map = new ol.Map({
 
 var layerSwitcher = new ol.control.LayerSwitcher({
     activationMode: 'click',
-	startActive: true,
+	// startActive: true,
     groupSelectStyle: 'none' // Can be 'children' [default], 'group' or 'none'
 });
 
 
 map.addControl(layerSwitcher);
-map.on('singleclick', function(evt) {
+map.on('singleclick', function (evt) {
+
 	map.forEachFeatureAtPixel(evt.pixel, function(feature, layer){
-		console.log(feature);
-		if(feature.values_.CD_PARCELA == "211")
-			location.href = "InformacionParcela.php?modelo=Parcela_1";
+
+		location.href = "InformacionParcela.php?modelo=" + feature.values_.ID_RECINTO;
+
 	})
+
 })
 
 
@@ -135,11 +136,12 @@ map.on('pointermove', function (e) {
 		map.forEachFeatureAtPixel(e.pixel, function (f) {
 			var arrayDeCadenas = f.id_.split(".");
 			if(arrayDeCadenas[0] == "parcelasmarmolejodisuelta"){
-				console.log(f);	
+
 				document.body.style.cursor = "pointer";
 				selected = f;
 				f.setStyle(selectStyle);
 				return true;
+
 			}
 		});
 	}else{

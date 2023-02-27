@@ -20,6 +20,7 @@ if( $clave != null &&  time() - $_SESSION['tiempo'] < 43200){
 
 	<link rel="stylesheet" type="text/css" href="Recursos/css/login.css" media="all">
 	<link rel="stylesheet" type="text/css" href="Recursos/css/botones.css" media="all">
+	<link rel="stylesheet" type="text/css" href="Recursos/css/responsive.css" media="all">
 	
 	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>

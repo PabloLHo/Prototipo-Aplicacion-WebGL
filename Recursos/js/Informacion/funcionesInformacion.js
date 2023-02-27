@@ -48,16 +48,14 @@ window.onload = function() {
 		//En caso contrario con 1 dato tendremos una parcela completa
 		else{
 			valor[0] = valor[0][0].toUpperCase() + valor[0].slice(1);
-				muestraNube(valor[0]);
+			muestraNube(valor[0]);
 		}
 		nombre_Modelo = valor[0];
 	}else{
 		nombre_Modelo = valor;
 	}
 	muestraInfo();
-	document.getElementById("cargaModelo").onclick = function irModelo(){
-																			location.href = "Modelado.php?modelo=" + nombre_Modelo;
-																		};
+	document.getElementById("cargaModelo").onclick = function irModelo(){	location.href = "Modelado.php?modelo=" + nombre_Modelo; };
 }
 
 
@@ -104,7 +102,9 @@ function muestraInfo(){
 	document.getElementById("fecha_vuelo").innerHTML = fechas[0];
 	document.getElementById("miTabla2").innerHTML = tablaSecun;
 	document.getElementById("miTablaIncidencias").innerHTML = tablaInci;
-	document.getElementById("imagen_altura").src = 'Recursos/textures/' + nombre_Modelo + "_altura.png";
+	document.getElementById("imagen_altura").src = 'Recursos/mapasAltura/Marmolejo_A_' + nombre_Modelo + '.jpg';
+	document.getElementById("ortoParcela").src = 'Recursos/ortofotos/Marmolejo_O_' + nombre_Modelo + '.jpg';
+
 }
 
 

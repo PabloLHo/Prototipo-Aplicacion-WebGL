@@ -3,67 +3,88 @@
 include("conectar.php");
 
 $funcion = $_REQUEST['funcion'];
-$modelo = $_REQUEST['modelo'];
+$parcela = $_REQUEST['modelo'];
     switch($funcion) {
         case 'DatosParcelaGen': 
-            datosParcelaGeneral($conexion,$modelo);
+            datosParcelaGeneral($conexion,$parcela);
             break;
         case 'DatosParcelaSecun': 
-            datosParcelaSecundario($conexion,$modelo);
+            datosParcelaSecundario($conexion,$parcela);
             break;
-		case 'imagenParcela':
-			imagenParcela($conexion,$modelo);
+		case 'imagenesParcela':
+			imagenParcela($conexion,$parcela);
 			break;
 		case 'DatosIncidencias':
-			datosIncidencias($conexion,$modelo);
+			datosIncidencias($conexion,$parcela);
 			break;
 		case 'DatosResumen':
-			datosResumen($conexion,$modelo);
+			datosResumen($conexion,$parcela);
 			break;
 		case 'zona':
-			coordenadasZona($conexion);
+			coordenadasZona($conexion, $parcela);
 			break;
 		case 'fechas':
-			obtenerFechas($conexion, $modelo);
+			obtenerFechas($conexion, $parcela);
 			break;
     }
 
 
-function datosParcelaGeneral($conexion, $modelo){
+function datosParcelaGeneral($conexion, $parcela){
 /////////////////////// CONSULTA A LA BASE DE DATOS ////////////////////////
-$resConsulta=$conexion->query("SELECT * FROM parcela where nombre = '$modelo'");
+$resConsulta=$conexion->query("SELECT * FROM datos_parcela where id_Parcela = '$parcela'");
+$resConsulta_2=$conexion->query("SELECT * FROM parcela where id_recinto = '$parcela'");
 
-$superficie = obtenerSuperficie($conexion, $modelo);
+
+//$superficie = obtenerSuperficie($conexion, $parcela);
 
 ///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
-$filaConsulta = $resConsulta->fetch_array(MYSQLI_BOTH);
-echo '<tbody  class="table-hover">
+$datosConsulta = $resConsulta->fetch_array(MYSQLI_BOTH);
+$datosConsulta_2 = $resConsulta_2->fetch_array(MYSQLI_BOTH);
+
+$resConsulta_3=$conexion->query("SELECT * FROM municipios_andalucia where cod_mun =".$datosConsulta_2["cd_mun"]." AND cod_prov =".$datosConsulta_2["cd_prov"]."");
+$datosConsulta_3 = $resConsulta_3->fetch_array(MYSQLI_BOTH);
+$total = mysqli_num_rows($resConsulta);
+	echo '<tbody  class="table-hover">
 
 				<tr>
+					<td class="text-left"></td>
+					<td class="text-left"><b>Valor</b></td>
+					<td class="text-left"><b>Codigo</b></td>
+				</tr>
+				<tr>
 					<td class="text-left"><b>Provincia</b></td>
-					<td class="text-left">'.$filaConsulta['Provincia'].'</td>
+					<td class="text-left">'.$datosConsulta_3['provincia'].'</td>
+					<td class="text-left">'.$datosConsulta_2['cd_prov'].'</td>
 				</tr>
 				<tr>
 					<td class="text-left"><b>Municipio</b></td>
-					<td class="text-left">'.$filaConsulta['Municipio'].'</td>
+					<td class="text-left">'.$datosConsulta_3['nombre'].'</td>
+					<td class="text-left">'.$datosConsulta_2['cd_mun'].'</td>
 				</tr>
 				<tr>
 					<td class="text-left"><b>Parcela</b></td>
-					<td class="text-left">'.$filaConsulta['id_Parcela'].'</td>
+					<td class="text-left">'.$parcela.'</td>
+					<td class="text-left">'.$datosConsulta_2['cd_parcela'].'</td>
 				</tr>
 				<tr>
 					<td class="text-left"><b>Superficie</b></td>
-					<td class="text-left">'.$superficie.' ha</td>
-				</tr>
-				<tr>
-					<td class="text-left"><b>Referencia Catastral</b></td>
-					<td class="text-left">'.$filaConsulta['ReferenciaCatastral'].'</td>
+					<td class="text-left"> 1.05</td>
+					<td class="text-left">Hectareas</td>
 				</tr>';
+				if($total > 0){
+					echo '<tr>
+						<td class="text-left"><b>Referencia Catastral</b></td>
+						<td class="text-left">'.$datosConsulta['ReferenciaCatastral'].'</td>
+						<td class="text-left"></td>
+					</tr>';
+				}
 				echo '</tbody>';
+
+
 }
 
-function obtenerSuperficie($conexion, $modelo){
-	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$modelo')");
+function obtenerSuperficie($conexion, $parcela){
+	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$parcela')");
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
 	$cadena = "";
 	$zonas = array();
@@ -83,7 +104,7 @@ function obtenerSuperficie($conexion, $modelo){
 	$totalSumado = 0;
 	for($i = 0; $i < count($zonas); ++$i){
 		$total = 0;
-		$res=$conexion->query("SELECT superficie FROM zona_parcela where id_zona =".$zonas[$i]." && id_parcela =(Select id_parcela from parcela where nombre = '$modelo')");
+		$res=$conexion->query("SELECT superficie FROM zona_parcela where id_zona =".$zonas[$i]." && id_parcela =(Select id_parcela from parcela where nombre = '$parcela')");
 		while($fila3 = $res->fetch_array(MYSQLI_BOTH)){
 			$total = $total + $fila3["superficie"];
 		}
@@ -92,9 +113,9 @@ function obtenerSuperficie($conexion, $modelo){
 	return $totalSumado;
 }
 
-function imagenParcela($conexion, $modelo){
+function imagenParcela($conexion, $parcela){
 	/////////////////////// CONSULTA A LA BASE DE DATOS ////////////////////////
-	$resConsulta=$conexion->query("SELECT * FROM parcela where nombre = '$modelo'");
+	$resConsulta=$conexion->query("SELECT * FROM datos_parcela where id_parcela = '$parcela'");
 
 
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
@@ -103,8 +124,8 @@ function imagenParcela($conexion, $modelo){
 	echo $imagen;
 }
 
-function datosParcelaSecundario($conexion, $modelo){
-	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$modelo')");
+function datosParcelaSecundario($conexion, $parcela){
+	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$parcela')");
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
 	$cadena = "";
 	while($filaConsulta = $resConsulta->fetch_array(MYSQLI_BOTH)){
@@ -133,8 +154,8 @@ function datosParcelaSecundario($conexion, $modelo){
 	
 }
 
-function datosIncidencias($conexion, $modelo){
-	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$modelo')");
+function datosIncidencias($conexion, $parcela){
+	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$parcela')");
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
 	$cadena = "";
 	$incidencias = array();
@@ -170,8 +191,8 @@ function datosIncidencias($conexion, $modelo){
 	
 }
 
-function datosResumen($conexion, $modelo){
-	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$modelo')");
+function datosResumen($conexion, $parcela){
+	$resConsulta=$conexion->query("SELECT * FROM zona_parcela where id_parcela =(Select id_parcela from parcela where nombre = '$parcela')");
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
 	$cadena = "";
 	$zonas = array();
@@ -191,7 +212,7 @@ function datosResumen($conexion, $modelo){
 	$totalSumado = 0;
 	for($i = 0; $i < count($zonas); ++$i){
 		$total = 0;
-		$res=$conexion->query("SELECT superficie FROM zona_parcela where id_zona =".$zonas[$i]." && id_parcela =(Select id_parcela from parcela where nombre = '$modelo')");
+		$res=$conexion->query("SELECT superficie FROM zona_parcela where id_zona =".$zonas[$i]." && id_parcela =(Select id_parcela from parcela where nombre = '$parcela')");
 		while($fila3 = $res->fetch_array(MYSQLI_BOTH)){
 			$total = $total + $fila3["superficie"];
 		}
@@ -212,17 +233,16 @@ function datosResumen($conexion, $modelo){
 }
 
 
-function coordenadasZona($conexion){
-	$zona = $_REQUEST["zona"];
-	$resConsulta=$conexion->query("SELECT X,Y,Z FROM zona_parcela where id = $zona");
+function coordenadasZona($conexion, $parcela){
+	$resConsulta=$conexion->query("SELECT AsText(SHAPE) FROM parcela where id_recinto = '$parcela'");
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
 	$filaConsulta = $resConsulta->fetch_array(MYSQLI_BOTH);
-	echo $filaConsulta["X"] . "/" . $filaConsulta["Y"] . "/" . $filaConsulta["Z"];
+	echo $filaConsulta["AsText(SHAPE)"];
 	
 }
 
-function obtenerFechas($conexion, $modelo){
-	$resConsulta=$conexion->query("SELECT fecha_vuelo, fecha_actualizacion FROM parcela where nombre = '$modelo'");
+function obtenerFechas($conexion, $parcela){
+	$resConsulta=$conexion->query("SELECT fecha_vuelo, fecha_actualizacion FROM datos_parcela where id_parcela = '$parcela'");
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
 	$filaConsulta = $resConsulta->fetch_array(MYSQLI_BOTH);
 	$timestamp = strtotime($filaConsulta["fecha_vuelo"]); 

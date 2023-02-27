@@ -155,14 +155,15 @@ if(time() - $_SESSION['tiempo'] > 43200){
 										</div>
 										<div class="col" id="contenedor_imagen_altitud" style="text-align: center">
 											<h5>Esquema de altitud </h5>
-											<img id="imagen_altura" src= "/" height="auto" width="100%" style="border: 3px solid; color: grey;">
+											<h5 id="prueba"> </h5>
+											<img id="imagen_altura" src= "/" alt="Esquema de altura de la parcela" height="auto" width="100%" style="border: 3px solid; color: grey;">
 										</div>
 									</div>
 								</div>					
 								<!-- Información Derecha Modelo (fotos y widget tiempo) -->
 								<div class="col-8" id="OrtoImagen">
 									<div class="row justify-content-center">
-										<img id="ortoParcela" src="Recursos/imagenes/ortofoto_1.png">
+										<img id="ortoParcela" src="/" alt="Ortofoto de la parcela">
 										<h5> &nbsp </h5>
 									</div>
 									<div class="row justify-content-center">
