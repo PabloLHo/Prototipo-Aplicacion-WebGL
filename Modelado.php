@@ -26,6 +26,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		
 		<!-- CSS propio -->
 		<link rel="stylesheet" href="Recursos/css/renderCanvas.css">
+		<link rel="stylesheet" href="Recursos/css/mensajes.css">
 
 	
 	    <!-- Javascript librerias externas -->
@@ -69,22 +70,21 @@ if(time() - $_SESSION['tiempo'] > 43200){
 	<body>
 	
 		<!-- Sección con toda la interfaz -->		
-			<script src="Recursos/js/Modelo/Control/gui.js"></script>
+		<script src="Recursos/js/Modelo/Control/gui.js"></script>
 			
-			<!-- Modelado -->
-			<section id="modelado" >
-				<div class="canvasZone">
-					<canvas class="renderCanvas" id="renderCanvas"></canvas>	
-					<script src="Recursos/js/Modelo/cargaBabylon.js"></script>
-				</div>
-			</section>
+		<div id="mensaje" class="info-msg" style="width: 100%; position: absolute">
+			<a href=""><i class="fa fa-times "></i>
+				Cargando nube de puntos. Espere a la finalización
+			</a>                   
+	    </div>
 
-			<div class="inputoutput">
-				<img id="imageSrc" src="Recursos/ortofotos/Marmolejo_O_1477851258.jpg" style="display: none">
-				<canvas id="canvasOutput" style="display: none" ></canvas>
+		<!-- Modelado -->
+		<section id="modelado" >
+			<div class="canvasZone">
+				<canvas class="renderCanvas" id="renderCanvas"></canvas>	
+				<script src="Recursos/js/Modelo/cargaBabylon.js"></script>
 			</div>
-
-			
+		</section>		
 		
 	</body>
 </html>

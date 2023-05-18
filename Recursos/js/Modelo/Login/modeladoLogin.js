@@ -15,7 +15,7 @@ function Parcela(){
 	var angle = 0;
 	scene.registerBeforeRender(function(){
         CoT.rotation.y = angle;
-        angle +=0.002;
+        angle +=0.0005;
     });
 	
     return scene;

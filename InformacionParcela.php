@@ -39,7 +39,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<script src="Recursos/js/Externo/Bootstrap/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-		
+		<script src="Recursos/js/Externo/theme.js"></script>	
 
 		<!-- Javascript propio -->
 		<script src="Recursos/js/Informacion/funcionesInformacion.js"></script>
@@ -60,7 +60,6 @@ if(time() - $_SESSION['tiempo'] > 43200){
 					<!-- Cabecera dashboardggg -->
 					<a class="d-flex justify-content-center align-items-center sidebar-brand m-0" href="Home.php">
 						<img src="Recursos/imagenes/logo_inves.png" width="100%" height="auto" style="z-index: 2000">
-						<!-- <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div> -->
 					</a>
 					<hr class="featurette-divider">
 					<ul class="navbar-nav text-light" id="accordionSidebar">
@@ -79,13 +78,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 								<i class="fas fa-user"></i><span>Historico Datos</span>
 							</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" id="link_prediccion" href="#" onclick="muestraPrediccion()">
-								<i class="fas fa-table"></i><span>Predicción Datos</span>
-							</a>
-						</li>
 					</ul>
-					<div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
 				</div>
 			</nav>
 			
@@ -112,9 +105,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 												<img class="border rounded-circle img-profile" src="Recursos/imagenes/dron.png">
 											</a>
 											<div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
-												<a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a>
-												<a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a>
-												<a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+												<a class="dropdown-item" href="#" onclick="location.href = 'Perfil.php'"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Usuario </a>
 												<div class="dropdown-divider"></div>
 												<form action="Recursos/php/cierreSesion.php" method="post">
 													<button class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Cerrar Sesión</button>
@@ -133,7 +124,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 							<div class="row align-items-center justify-content-center" id="Modelo">
 							
 								
-								<div class="col-3" id="Informacion" style="margin-right: 2%">
+								<div class="col-2" id="Informacion" style="margin-right: 2%">
 									<div class="row justify-content-center">		
 										<div>
 											<h4 id="Titulo1" style="text-align: center">Información General</h4>	
@@ -160,8 +151,8 @@ if(time() - $_SESSION['tiempo'] > 43200){
 										</div>
 									</div>
 								</div>					
-								<!-- Información Derecha Modelo (fotos y widget tiempo) -->
-								<div class="col-8" id="OrtoImagen">
+								<!-- Información Izq Modelo -->
+								<div class="col-9" id="OrtoImagen">
 									<div class="row justify-content-center">
 										<img id="ortoParcela" src="/" alt="Ortofoto de la parcela">
 										<h5> &nbsp </h5>
@@ -195,7 +186,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 														<th colspan="6" style="background-color: #f8f9fc;"><h4 style="text-align: center; color: #00AAE4;">Información Particular</h4></th>
 													<!-- </tr> -->
 													<tr>
-														<th><h1>Zona</h1></th>
+														<th><h1>Recinto</h1></th>
 														<th><h1>Uso</h1></th>
 														<th><h1 style="text-align: center">Superficie &nbsp(ha)</h1></th>
 														<th><h1 style="text-align: center">Pendiente (%)</h1></th>
@@ -249,10 +240,23 @@ if(time() - $_SESSION['tiempo'] > 43200){
 								</div>
 							</div>
 						</section>
+
 						
 						
 						<section class="container-fluid" id="Historico" style="display:none">
 							<div class="row align-items-center justify-content-center">
+								<dialog id="Grafica" style="width: 75%; margin-left: 20%; margin-bottom: 10%">
+									<a class="button cross" onclick="document.getElementById('Grafica').close()"></a>
+									<!--<button onclick="document.getElementById('Grafica').close()">Cerrar</button> -->
+									<div class="card-body" id="despliegueGrafica">
+										<canvas id="SobrePuesta" ></canvas>
+									</div>
+									<button onclick="actualizarGrafica('line', 'SobrePuesta' );">Gráfica Lineas</button>
+									<button onclick="actualizarGrafica('bar', 'SobrePuesta' );">Gráfica Barras</button>
+									<button onclick="actualizarFormatoGrafica('year', 'SobrePuesta' );">Años</button>
+									<button onclick="actualizarFormatoGrafica('month', 'SobrePuesta' );">Meses</button>
+									<button onclick="actualizarFormatoGrafica('week', 'SobrePuesta' );">Semanas</button>
+								</dialog>
 								<div class="d-sm-flex justify-content-between align-items-center mb-4">
 									<h3 class="text-dark mb-0">Información Historica</h3>
 								</div>
@@ -260,20 +264,20 @@ if(time() - $_SESSION['tiempo'] > 43200){
 									<div class="row">
 										<div class="col card shadow" style="margin-right: 3%">
 											<div class="card-header d-flex justify-content-between align-items-center">
-												<h6 class="text-primary fw-bold m-0">Producción Anual</h6>
+												<a onclick="sobresaltar('Produccion_Anual')">
+													<h6 class="text-primary fw-bold m-0">Producción Anual</h6>
+												</a>
 											</div>
-												<!-- <button onclick="actualizarGrafica('line');">Gráfica Lineas</button> -->
-												<!-- <button onclick="actualizarGrafica('bar')">Gráfica Barras</button> -->
 											<div class="card-body" id="despliegueGrafica">
 												<canvas id="Produccion_Anual" ></canvas>
 											</div>
 										</div>
 										<div class="col card shadow">
 											<div class="card-header d-flex justify-content-between align-items-center">
-												<h6 class="text-primary fw-bold m-0">Temperatura Media</h6>
+												<a onclick="sobresaltar('Temperatura_Media')">
+													<h6 class="text-primary fw-bold m-0">Temperatura Media</h6>
+												</a>
 											</div>
-												<!-- <button onclick="actualizarGrafica('line');">Gráfica Lineas</button> -->
-												<!-- <button onclick="actualizarGrafica('bar')">Gráfica Barras</button> -->
 											<div class="card-body" id="despliegueGrafica">
 												<canvas id="Temperatura_Media" ></canvas>
 											</div>
@@ -282,20 +286,20 @@ if(time() - $_SESSION['tiempo'] > 43200){
 									<div class="row" style="margin-top: 5%">
 										<div class="col card shadow" style="margin-right: 3%">
 											<div class="card-header d-flex justify-content-between align-items-center">
-												<h6 class="text-primary fw-bold m-0">Precipitaciones</h6>
+												<a onclick="sobresaltar('Precipitaciones')">
+													<h6 class="text-primary fw-bold m-0">Precipitaciones</h6>
+												</a>
 											</div>
-												<!-- <button onclick="actualizarGrafica('line');">Gráfica Lineas</button> -->
-												<!-- <button onclick="actualizarGrafica('bar')">Gráfica Barras</button> -->
 											<div class="card-body" id="despliegueGrafica">
 												<canvas id="Precipitaciones" ></canvas>
 											</div>
 										</div>
 										<div class="col card shadow">
 											<div class="card-header d-flex justify-content-between align-items-center">
-												<h6 class="text-primary fw-bold m-0">Humedad</h6>
+												<a onclick="sobresaltar('Humedad')">
+													<h6 class="text-primary fw-bold m-0">Humedad</h6>
+												</a>
 											</div>
-												<!-- <button onclick="actualizarGrafica('line');">Gráfica Lineas</button> -->
-												<!-- <button onclick="actualizarGrafica('bar')">Gráfica Barras</button> -->
 											<div class="card-body" id="despliegueGrafica">
 												<canvas id="Humedad" ></canvas>
 											</div>
@@ -329,10 +333,16 @@ if(time() - $_SESSION['tiempo'] > 43200){
 						</section>
 					</div>
 				</div>
+				<footer class="bg-white sticky-footer">
+					<div class="container my-auto">
+						<div class="text-center my-auto copyright"><span>Copyright © Pablo Latorre Hortelano 2023</span></div>
+					</div>
+				</footer>
 			</div>
-		</div>
 		
+		</div>
+
 	</body>
 	
-	<script src="Recursos/js/Externo/theme.js"></script>
+
 </html>

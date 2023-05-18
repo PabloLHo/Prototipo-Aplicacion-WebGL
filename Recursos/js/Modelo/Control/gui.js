@@ -6,23 +6,21 @@ var parcela = "";
 var tipoCamara = "perspectiva";
 var tipoModelo = "nube";
 var polygon;
-var nubeExists = true;
+var nubeExists;
 
 
 
-function controlEscena(camera, cameraCenital, scene, _parcela) {
+function controlEscena(camera, cameraCenital, scene, _parcela, nube) {
 
 	camara = camera;
 	camaraCenital = cameraCenital;
 	escena = scene;
 	parcela = _parcela;
-	console.log(nube.length);
-	if (nube.length == 0) {
+	nubeExists = nube;
+	if (!nubeExists) {
 		system["formato"] = "text";
-		creacionPoligono(parcela, detectado);
-		nubeExists = false;
+		cambioModelo();
 	}
-
 }
 
 var gui = new dat.GUI({name: 'GUI', width: 250 });
@@ -40,14 +38,15 @@ function handleDeviceChange(e) {
 handleDeviceChange(smallDevice);
 
 var system = {
-    Zoom: 175,
-    rotationX: Math.PI / 4,
-    rotationY: 0,
+	Zoom: 175,
+	rotationX: Math.PI / 4,
+	rotationY: 0,
 	moverX: 0,
 	moverY: 0,
 	seleccion: false,
 	formato: "nube",
 };
+
 
 var f_b = gui.addFolder('Base');
 f_b.open();
@@ -225,7 +224,8 @@ function eliminarRecorte(){
 function recorte(){
 	
 	if(finSeleccion){
-		for(var i = 0; i < coordenadas.length - 1; i++){
+		for (var i = 0; i < coordenadas.length - 1; i++){
+			//Se multiplica por Y para bajar las coordenadas a la altura de la nube, pues la camara se encuentra a altura Y.
 			coordenadas[i].x = coordenadas[i].x * coordenadas[i].y;
 			coordenadas[i].z = coordenadas[i].z * coordenadas[i].y;
 		}
@@ -255,11 +255,21 @@ function eliminarSeleccion(){
 }
 
 function cambioModelo() {
-	if (nubeExists) {
+	if (!nubeExists) {
+		creacionPoligono(parcela, detectado);
+		if (system["seleccion"] == true) {
+			eliminarRecorte();
+		}
+		system["seleccion"] = false;
+		tipoModelo = "text";
+	} else {
 		if (system["formato"] == "nube") {
 			polygon.dispose();
+			for (var i = 0; i < olivos_deteccion.length; i++) {
+				olivos_deteccion[i][0].dispose();
+			}
 			if (tipoModelo != "combi") {
-				creacionParcela(escena);
+				reconstruirParcela();
 			}
 			tipoModelo = "nube";
 		} else if (system["formato"] == "text") {
@@ -276,13 +286,11 @@ function cambioModelo() {
 			if (tipoModelo == "nube") {
 				creacionPoligono(parcela, detectado);
 			} else {
-				creacionParcela(escena);
+				reconstruirParcela();
 			}
 			tipoModelo = "combi";
 		}
-	} else {
-		system["formato"] = "text";
-    }
+	}
 }
 
 function detectar(){
@@ -297,6 +305,7 @@ function detectar(){
 	limites = valores.split("/");
 	detectado = true;
 	if (system["formato"] == "text") {
+		polygon.dispose();
 		creacionPoligono(parcela, detectado);
 	}
 	aux = limites[3].split("-");
@@ -306,6 +315,31 @@ function detectar(){
 	}
 
 	posicionamiento(olivos, limites[1], limites[2]);
+
+	var hl = new BABYLON.HighlightLayer("hl1", scene);
+	//Ultimo olivo seleccionado
+	var ultimaSeleccion = 0;
+	escena.onPointerDown = (evt) => {
+		if (evt.button == 2 && vision_pov) {
+			//Convierte el raton en un joystick de manera que al moverlo se mueve la camara en primera persona
+			engine.enterPointerlock();
+		}
+		if (evt.button == 1) {
+			engine.exitPointerlock();
+		}
+		const ray = scene.createPickingRay(scene.pointerX, scene.pointerY);
+		const raycastHit = scene.pickWithRay(ray);
+		if (raycastHit.pickedMesh && raycastHit.pickedMesh.metadata == "olivo") {
+			hl.removeAllMeshes();
+			hl.addMesh(raycastHit.pickedMesh, BABYLON.Color3.Green());
+			ultimaSeleccion = raycastHit.pickedMesh.id;
+		}
+		//Si se clica fuera de un olivo se deselecciona todo
+		else {
+			hl.removeAllMeshes();
+			ultimaSeleccion = 0;
+		}
+	}
 }
 
 function ajuste() {

@@ -1,6 +1,4 @@
 /*Archivos JS encargado del modelado de una escena dentro de la interfaz web*/
-
-
 function seleccionPoligonal(scene, camera) {
     const getWorldPoint = () => {
         const point = BABYLON.Vector3.Unproject(
@@ -17,7 +15,7 @@ function seleccionPoligonal(scene, camera) {
     puntos = 0;
 	finSeleccion = false;
     scene.onPointerObservable.add((eventData) => {
-		if (!finSeleccion &&seleccionActivo) {
+		if (!finSeleccion && seleccionActivo) {
 			if (eventData.type === BABYLON.PointerEventTypes.POINTERDOWN) {
 				var mousePoint = getWorldPoint();
 				puntos += 1;
@@ -84,9 +82,6 @@ function limpiarCoordenadas(){
 
 
 //Método punto en poligono, se deben recorrer las coordenadas en sentido anti-horario
-//coordenadas = [new BABYLON.Vector3(2, 0, -2), new BABYLON.Vector3(0, 0, 2), new BABYLON.Vector3(-2, 0, -2)];
-//seleccionPuntos(new BABYLON.Vector3(0,0,0));
-
 function seleccionPuntos(punto){
 	suma = 0;
 	for( var i = 0; i < coordenadas.length-1; i++){
@@ -100,15 +95,15 @@ function seleccionPuntos(punto){
 		}
 		suma += angulo;
 	}
-	//console.log(suma);
+
+
 	if (-0.1 < suma && suma < 0.1) {
 		//Fuera del poligono (valor 0 aproximado)
 		return -1;
 	}
-	//} else if (2 * Math.PI - 0.1 < suma && suma < 2 * Math.PI + 0.1) {
-		//Dentro del poligono
+	//Dentro del poligono
 	return 1;
-	//}
+
 }
 
 function calculoAngulo(punto, vertice1, vertice2) {
@@ -133,7 +128,6 @@ function calculoAngulo(punto, vertice1, vertice2) {
 
 
 //Método a explicar
-// vectorPerpendicular(new BABYLON.Vector3(2,0,1),new BABYLON.Vector3(1,-1,3));
 function vectorPerpendicular(vector, vector2){
 	x = vector.y * vector2.z - vector.z * vector2.y;
 	y = vector.z * vector2.x - vector.x * vector2.z;

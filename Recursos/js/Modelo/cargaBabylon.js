@@ -1,6 +1,7 @@
 /*Archivos JS encargado de la correcta inicialización de babylon y su correspondiente llamada al modelado oportuno*/
 var valor = "";
 var nombre_modelo = "";
+var zona = "";
 
 var canvas = document.getElementById("renderCanvas");
 var startRenderLoop = function (engine, canvas) {
@@ -66,11 +67,17 @@ function inicio() {
 			valor = url.substring(variable_pos + variable_may.length + 1, url.length);
 		}
 		valor = valor.toLowerCase();
-		valor = valor.split("/");
-		valor[0] = valor[0][0].toUpperCase() + valor[0].slice(1);
-		nombre_modelo = valor[0];
+		valores = valor.split("-");
+		if (valores.length == 1) {
+			nombre_modelo = valor;
+			zona = "";
+		} else {
+			nombre_modelo = valores[0];
+			zona = valores[1];
+        }
 	} else {
 		nombre_modelo = "";
+		zona = "";
 	}
 
 }

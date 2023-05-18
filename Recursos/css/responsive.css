@@ -2,8 +2,6 @@
 	Estilo para la muestra en movil o tablet
  */
 
-
-
 /* Movil */
 @media screen and (max-width: 600px){
 	#fotoFecha{
@@ -13,6 +11,7 @@
 	#contenedor_imagen_altitud{
 		margin-top: 10%;
 	}
+
 
 }
 
@@ -26,14 +25,13 @@
 	.container-nombre{
 		top: 60%;
 		left: 10%;
-		width: 30%;
+		width: 30%
 	}
 	
 	#ortoParcela {
-		width: 100%;
+		width: 100%
 	}
 
-	
 }
 
 
@@ -43,18 +41,17 @@
 	.row #OrtoImagen {
 		order: 1;
 		width: 100%;
-		margin-bottom: 2%;
+		margin-bottom: 2%
 	}
 	
 	.row #Informacion {
 		order: 2;
-		width: 100%;
+		width: 100%
 	}
 	
 	#imagen_altura {
-		width: 50%;
+		width: 50%
 	}
-
 	
 }
 

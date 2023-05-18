@@ -103,8 +103,12 @@ function muestraInfo(){
 	document.getElementById("miTabla2").innerHTML = tablaSecun;
 	document.getElementById("miTablaIncidencias").innerHTML = tablaInci;
 	document.getElementById("imagen_altura").src = 'Recursos/mapasAltura/Marmolejo_A_' + nombre_Modelo + '.jpg';
-	document.getElementById("ortoParcela").src = 'Recursos/ortofotos/Marmolejo_O_' + nombre_Modelo + '.jpg';
+	document.getElementById("ortoParcela").src = 'Recursos/ortofotos/Marmolejo_O_' + nombre_Modelo + '.png';
 
+}
+
+function irZona(direccion) {
+	location.href = "Modelado.php?modelo=" + nombre_Modelo + "-" + direccion;
 }
 
 
@@ -138,7 +142,7 @@ function imprimir(){
 
 }
 
-function calculoGrafica(tipo, id,tiempo){
+function calculoGrafica(tipo, id, nombre ,tiempo){
 	const labels = [new Date('2022-09-01T00:00:00'), new Date('2022-09-02T00:00:00'), new Date('2022-09-03T00:00:00'), new Date('2022-09-04T00:00:00'), new Date('2022-09-05T00:00:00'), new Date('2022-09-06T00:00:00'), new Date('2022-09-07T00:00:00'),
 	new Date('2022-09-08T00:00:00'), new Date('2022-09-09T00:00:00'), new Date('2022-09-10T00:00:00'), new Date('2022-09-11T00:00:00'), new Date('2022-09-12T00:00:00'), new Date('2022-09-13T00:00:00'), new Date('2022-09-14T00:00:00'),
 	new Date('2022-09-15T00:00:00'), new Date('2022-09-16T00:00:00'), new Date('2022-09-17T00:00:00'), new Date('2022-09-18T00:00:00'), new Date('2022-09-19T00:00:00'), new Date('2022-09-20T00:00:00'), new Date('2022-09-21T00:00:00'),
@@ -163,7 +167,7 @@ function calculoGrafica(tipo, id,tiempo){
 	const data = {
 		labels: labels,
 		datasets: [{
-			label: id,
+			label: nombre,
 			backgroundColor: 'rgb(' + r + ',' + g + ',' + b +')',
 			borderColor: 'rgb(' + r + ',' + g + ',' + b +')',
 			data: data2,
@@ -210,16 +214,27 @@ function calculoGrafica(tipo, id,tiempo){
 
 }
 
-function actualizarGrafica(tipo){
-	let chartStatus = Chart.getChart("grafica"); // <canvas> id
+function sobresaltar(id) {
+	if (Chart.getChart('SobrePuesta')) {
+		let chartStatus = Chart.getChart('SobrePuesta'); // <canvas> id
+		chartStatus.destroy();
+	}
+	document.getElementById("Grafica").show();
+	document.getElementById("Grafica").style.zIndex = 4000;
+	const myChart = new Chart(document.getElementById('SobrePuesta'), Chart.getChart(id).config);
+	//calculoGrafica('line', 'SobrePuesta', id, 'week');
+}
+
+function actualizarGrafica(tipo, nombre){
+	let chartStatus = Chart.getChart(nombre); // <canvas> id
 	chartStatus.config.type = tipo;
 	var config = chartStatus.config;
 	chartStatus.destroy();
-	const myChart = new Chart( document.getElementById('grafica'),config);
+	const myChart = new Chart( document.getElementById(nombre),config);
 }
 
-function actualizarFormatoGrafica(tipo){
-	let chartStatus = Chart.getChart("grafica"); // <canvas> id
+function actualizarFormatoGrafica(tipo, nombre){
+	let chartStatus = Chart.getChart(nombre); // <canvas> id
 	if(tipo == 'year'){
 		chartStatus.config.options.scales.x.ticks.source = 'data';
 	}else{
@@ -228,12 +243,12 @@ function actualizarFormatoGrafica(tipo){
 	chartStatus.config.options.scales.x.time.unit = tipo;
 	var config = chartStatus.config;
 	chartStatus.destroy();
-	const myChart = new Chart( document.getElementById('grafica'),config);
+	const myChart = new Chart( document.getElementById(nombre),config);
 }
 
 
 function muestraPrincipal(){
-	document.getElementById("Principal").style.display = "flex";
+	document.getElementById("Principal").style.display = "block";
 	document.getElementById("Historico").style.display = "none";
 	document.getElementById("Zonas").style.display = "none";
 	document.getElementById("Prediccion").style.display = "none";
@@ -242,31 +257,24 @@ function muestraPrincipal(){
 function muestraZonas(){
 	document.getElementById("Principal").style.display = "none";
 	document.getElementById("Historico").style.display = "none";
-	document.getElementById("Zonas").style.display = "flex";
+	document.getElementById("Zonas").style.display = "block";
 	document.getElementById("Prediccion").style.display = "none";
 }
 
 function muestraHistorico(){
 	document.getElementById("Principal").style.display = "none";
-	document.getElementById("Historico").style.display = "flex";
+	document.getElementById("Historico").style.display = "block";
 	document.getElementById("Zonas").style.display = "none";
 	document.getElementById("Prediccion").style.display = "none";
-	calculoGrafica('line', 'Produccion_Anual','week');
-	calculoGrafica('line', 'Temperatura_Media','week');
-	calculoGrafica('bar', 'Precipitaciones','week');
-	calculoGrafica('line', 'Humedad','week');
+	calculoGrafica('line', 'Produccion_Anual', "Produccion" ,'week');
+	calculoGrafica('line', 'Temperatura_Media', "Temperatura" ,'week');
+	calculoGrafica('bar', 'Precipitaciones', "Precipitaciones" ,'week');
+	calculoGrafica('line', 'Humedad', "Humedad" ,'week');
 }
 
-function muestraPrediccion(){
-	document.getElementById("Principal").style.display = "none";
-	document.getElementById("Historico").style.display = "none";
-	document.getElementById("Zonas").style.display = "none";
-	document.getElementById("Prediccion").style.display = "flex";
-	calculoGrafica('line', 'grafica2');
-}
 
 $(function() {
-    $('.navbar-nav li a').click(function(e) {
+	$('.navbar-nav li a').click(function (e) {
 		$("nav").find(".active").removeClass("active");
         e.preventDefault();
 		var $this = $(this);
