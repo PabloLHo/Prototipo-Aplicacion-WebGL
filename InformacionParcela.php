@@ -5,13 +5,9 @@ session_start();
 
 $clave = $_SESSION['usuario'];
 
-if( $clave == null ){
+if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 	header("location:index.php");
 };
-
-if(time() - $_SESSION['tiempo'] > 43200){
-	header("location:index.php");
-}
 ?>
 
 <html lang="es">
@@ -20,7 +16,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
+		<link rel="icon" type="image/x-icon" href="Recursos/imagenes/logo.png">
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" type="text/css" href="Recursos/css/dashboard.css" media="all">
 		<link rel="stylesheet" href="Recursos/fonts/fontawesome-all.min.css">
@@ -45,7 +41,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<script src="Recursos/js/Informacion/funcionesInformacion.js"></script>
 
 		
-		<title>Gemelo Digital</title>
+		<title>Información</title>
 	
 	</head>
   
@@ -88,42 +84,41 @@ if(time() - $_SESSION['tiempo'] > 43200){
 				<div id="content">
 			
 					<!-- Cabecera -->
-						<nav class="navbar navbar-light navbar-expand shadow mb-4 topbar static-top">
-							<div class="container-fluid" >
-								<button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button">
-									<i class="fas fa-bars"></i>
-								</button>
-								<a href="Home.php" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-									<span class="fs-4 text-dark">Gestión de la Parcela</span>
-								</a>
-								<ul class="navbar-nav flex-nowrap ms-auto">
-									<div class="d-none d-sm-block topbar-divider"></div>
-									<li class="nav-item dropdown no-arrow">
-										<div class="nav-item dropdown no-arrow">
-											<a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
-												<span class="d-none d-lg-inline me-2 text-gray-600 small"><b> <?php echo $clave;?> </b></span>
-												<img class="border rounded-circle img-profile" src="Recursos/imagenes/dron.png">
-											</a>
-											<div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
-												<a class="dropdown-item" href="#" onclick="location.href = 'Perfil.php'"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Usuario </a>
-												<div class="dropdown-divider"></div>
-												<form action="Recursos/php/cierreSesion.php" method="post">
-													<button class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Cerrar Sesión</button>
-												</form>
-											</div>
+					<nav class="navbar navbar-light navbar-expand shadow mb-4 topbar static-top">
+						<div class="container-fluid" >
+							<button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button">
+								<i class="fas fa-bars"></i>
+							</button>
+							<a href="Home.php" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+								<span class="fs-4 text-dark">Gestión Parcela</span>
+							</a>
+							<ul class="navbar-nav flex-nowrap ms-auto">
+								<div class="d-none d-sm-block topbar-divider">
+								</div>
+								<li class="nav-item dropdown no-arrow">
+									<div class="nav-item dropdown no-arrow">
+										<a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
+											<span class="d-none d-lg-inline me-2 text-dark-600 small"><b id="onload"><?php echo $clave?></b></span>
+							   				<img class="border rounded-circle img-profile" id="fotoPerfilNav">
+										</a>
+										<div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
+											<a class="dropdown-item" href="#" onclick="location.href = 'Perfil.php'"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Usuario </a>
+											<div class="dropdown-divider"></div>
+											<form action="Recursos/php/cierreSesion.php" method="post">
+												<button class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> &nbsp;Cerrar Sesión</button>
+											</form>
 										</div>
-									</li>
-								</ul>
-							</div>
-						</nav>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</nav>
 				  
 					
 					<div class="container-fluid">
 						<section id="Principal" class="container-fluid">
 							<!-- Modelado e información principal -->
-							<div class="row align-items-center justify-content-center" id="Modelo">
-							
-								
+							<div class="row align-items-center justify-content-center" id="Modelo">	
 								<div class="col-2" id="Informacion" style="margin-right: 2%">
 									<div class="row justify-content-center">		
 										<div>
@@ -136,7 +131,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 									</div>
 									<hr class="featurette-divider">
 									<div class="row align-items-center justify-content-center" id="fotoFecha">
-										<div class="col">
+										<div class="col-8">
 											<table style="margin: auto; width: 100%">
 												<tr style="text-align: center">
 													<td style="background-color: #3b83bd;border:1px solid #000; color: #ffffff">Fecha de vuelo:</td>
@@ -179,19 +174,19 @@ if(time() - $_SESSION['tiempo'] > 43200){
 								</div>
 								<div>
 									<div id="tablaEspecifica">
-										<div >
-											<table class="container">
+										<div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+											<table class="table my-0" id="data">
 												<thead>
 													<!-- <tr> -->
 														<th colspan="6" style="background-color: #f8f9fc;"><h4 style="text-align: center; color: #00AAE4;">Información Particular</h4></th>
 													<!-- </tr> -->
 													<tr>
-														<th><h1>Recinto</h1></th>
-														<th><h1>Uso</h1></th>
-														<th><h1 style="text-align: center">Superficie &nbsp(ha)</h1></th>
-														<th><h1 style="text-align: center">Pendiente (%)</h1></th>
-														<th><h1 style="text-align: center">Incidencias</h1></th>
-														<th><h1>&nbsp </h1></th>
+														<th><p>Recinto</p></th>
+														<th><p>Uso</p></th>
+														<th style="text-align: center"><p>Superficie &nbsp(ha)</p></th>
+														<th style="text-align: center"><p>Pendiente (%)</p></th>
+														<th style="text-align: center"><p>Incidencias</p></th>
+														<th><p>&nbsp </p></th>
 													</tr>
 												</thead>
 												<tbody id="miTabla2">
@@ -200,31 +195,31 @@ if(time() - $_SESSION['tiempo'] > 43200){
 										</div>
 										<h5> &nbsp </h5>
 										<div>
-											<div class="row">
-												<div class="col-6" id="tabla_1">
-													<table class="container">
+											<div class="row" id="tablas">
+												<div class="col-6 table-responsive" role="grid" aria-describedby="dataTable_info" id="tabla_1">
+													<table class="table my-0" id="data">
 														<thead>
 															<tr>
 																<th colspan="2" style="background-color: #f8f9fc;"><h5 style="text-align: center; color: #00AAE4;">Incidencias</h5></th>
 															</tr>
 															<tr>
-																<th><h1>Código incidencia</h1></th>
-																<th><h1>Descripción</h1></th>
+																<th><p>Código incidencia</p></th>
+																<th><p>Descripción</p></th>
 															</tr>
 														</thead>
 														<tbody id="miTablaIncidencias">
 														</tbody>
 													</table>
 												</div>
-												<div class="col-6" id="tabla_2">
-													<table class="container" >
+												<div class="col-6 table-responsive" role="grid" aria-describedby="dataTable_info" id="tabla_2">
+													<table class="table my-0" id="data">
 														<thead>
 															<tr>
 																<th colspan="2" style="background-color: #f8f9fc;"><h5 style="text-align: center; color: #00AAE4;">Resumen de datos</h5></th>
 															</tr>
 															<tr>
-																<th><h1>Uso</h1></th>
-																<th><h1>Superficie Total &nbsp(ha)</h1></th>
+																<th><p>Uso</p></th>
+																<th><p>Superficie Total &nbsp(ha)</p></th>
 															</tr>
 														</thead>
 														<tbody id="miTablaResumen">
@@ -251,11 +246,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 									<div class="card-body" id="despliegueGrafica">
 										<canvas id="SobrePuesta" ></canvas>
 									</div>
-									<button onclick="actualizarGrafica('line', 'SobrePuesta' );">Gráfica Lineas</button>
-									<button onclick="actualizarGrafica('bar', 'SobrePuesta' );">Gráfica Barras</button>
-									<button onclick="actualizarFormatoGrafica('year', 'SobrePuesta' );">Años</button>
-									<button onclick="actualizarFormatoGrafica('month', 'SobrePuesta' );">Meses</button>
-									<button onclick="actualizarFormatoGrafica('week', 'SobrePuesta' );">Semanas</button>
+									<input type="range" id="slider_SobrePuesta">
 								</dialog>
 								<div class="d-sm-flex justify-content-between align-items-center mb-4">
 									<h3 class="text-dark mb-0">Información Historica</h3>
@@ -264,22 +255,24 @@ if(time() - $_SESSION['tiempo'] > 43200){
 									<div class="row">
 										<div class="col card shadow" style="margin-right: 3%">
 											<div class="card-header d-flex justify-content-between align-items-center">
-												<a onclick="sobresaltar('Produccion_Anual')">
+												<a onclick="sobresaltar('Produccion')">
 													<h6 class="text-primary fw-bold m-0">Producción Anual</h6>
 												</a>
 											</div>
 											<div class="card-body" id="despliegueGrafica">
-												<canvas id="Produccion_Anual" ></canvas>
+												<canvas id="Produccion" ></canvas>
+												<input type="range" id="slider_produccion">
 											</div>
 										</div>
 										<div class="col card shadow">
 											<div class="card-header d-flex justify-content-between align-items-center">
-												<a onclick="sobresaltar('Temperatura_Media')">
+												<a onclick="sobresaltar('Temperatura')">
 													<h6 class="text-primary fw-bold m-0">Temperatura Media</h6>
 												</a>
 											</div>
 											<div class="card-body" id="despliegueGrafica">
-												<canvas id="Temperatura_Media" ></canvas>
+												<canvas id="Temperatura" ></canvas>
+												<input type="range" id="slider_temperatura">
 											</div>
 										</div>
 									</div>
@@ -292,6 +285,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 											</div>
 											<div class="card-body" id="despliegueGrafica">
 												<canvas id="Precipitaciones" ></canvas>
+												<input type="range" id="slider_precipitaciones">
 											</div>
 										</div>
 										<div class="col card shadow">
@@ -302,33 +296,12 @@ if(time() - $_SESSION['tiempo'] > 43200){
 											</div>
 											<div class="card-body" id="despliegueGrafica">
 												<canvas id="Humedad" ></canvas>
+												<input type="range" id="slider_humedad">
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						<hr class="featurette-divider">
-						</section>
-						
-						<!-- Información Historica de la parcela -->
-						<section class="container-fluid" id="Prediccion" style="display:none">
-							<div class="tab" style="box-shadow: 0 4px 4px -2px rgba(26, 37, 99, 1);">
-								<input class="input-acordeon" type="checkbox" id="chck3" onclick="calculoGrafica('line','grafica');">
-								<label class="tab-label" for="chck3">Información Historica Parcela</label>
-								<div class="tab-content" >
-									<div id="tablaHistorica">
-										<button onclick="actualizarGrafica('line');">Gráfica Lineas</button>
-										<button onclick="actualizarGrafica('bar')">Gráfica Barras</button>
-										<div id="despliegueGrafica" style="margin: 0px auto;">
-											<canvas id="grafica5" style=""></canvas>
-										</div>
-										<button onclick="actualizarFormatoGrafica('week');">Semanas</button>
-										<button onclick="actualizarFormatoGrafica('day')">Dias</button>
-										<button onclick="actualizarFormatoGrafica('month')">Meses</button>
-										<button onclick="actualizarFormatoGrafica('year')">Años</button>
-									</div>
-								</div>
-							</div>	
 						<hr class="featurette-divider">
 						</section>
 					</div>
@@ -339,7 +312,6 @@ if(time() - $_SESSION['tiempo'] > 43200){
 					</div>
 				</footer>
 			</div>
-		
 		</div>
 
 	</body>

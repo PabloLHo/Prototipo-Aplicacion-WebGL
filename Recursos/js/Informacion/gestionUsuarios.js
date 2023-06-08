@@ -1,4 +1,6 @@
 /*Archivos JS encargado de las funciones de la interfaz perfil de usuario*/
+nombreActual = ""
+
 
 window.onload = function () {
 	var datos = $.ajax({
@@ -18,7 +20,7 @@ function muestraUsuarios() {
 
 	usuarios = $.ajax({
 		url: 'Recursos/php/gestionPerfiles.php',
-		data: { funcion: "mostrarUsuarios", nivel: 0, tipo: "inicial" },
+		data: { funcion: "mostrarUsuarios", nivel: 1, tipo: "inicial" },
 		dataType: 'text',
 		async: false
 	}).responseText;
@@ -35,12 +37,12 @@ function anterioresUsuarios(numero) {
 
 	usuarios = $.ajax({
 		url: 'Recursos/php/gestionPerfiles.php',
-		data: { funcion: "mostrarUsuarios", nivel: numero - 1, tipo: "anterior" },
+		data: { funcion: "mostrarUsuarios", nivel: numero, tipo: "anterior" },
 		dataType: 'text',
 		async: false
 	}).responseText;
 
-	document.getElementById("contenido_usuarios").innerHTML = usuarios.split("&");
+	document.getElementById("contenido_usuarios").innerHTML = usuarios.split("&")[0];
 
 	document.getElementById("post").className = "page-item";
 
@@ -56,15 +58,15 @@ function siguientesUsuarios(numero, total) {
 
 	usuarios = $.ajax({
 		url: 'Recursos/php/gestionPerfiles.php',
-		data: { funcion: "mostrarUsuarios", nivel: numero + 1, tipo: "siguiente" },
+		data: { funcion: "mostrarUsuarios", nivel: numero, tipo: "siguiente" },
 		dataType: 'text',
 		async: false
 	}).responseText;
 
-	document.getElementById("contenido_usuarios").innerHTML = usuarios.split("&");
+	document.getElementById("contenido_usuarios").innerHTML = usuarios.split("&")[0];
 	document.getElementById("disabled").className = "page-item";
 
-	if (numero >= total - 10) {
+	if (numero > total - 10) {
 		document.getElementById("post").className = "page-item disabled";
 	} else {
 		document.getElementById("disabled").className = "page-item ";
@@ -104,32 +106,51 @@ function editarUsuario(nombre) {
 	document.getElementById("name_user").value = document.getElementById("nombre_card").innerHTML;
 	document.getElementById("lastname_user").value = document.getElementById("apellido_card").innerHTML;
 
+	nombreActual = nombre;
+
+	var usuario = document.getElementById("user_user");
+	usuario.addEventListener("input", function () {
+		nombre = document.getElementById("user_user").value;
+		var datos = $.ajax({
+			url: 'Recursos/php/gestionPerfiles.php',
+			data: { nombre: nombre, funcion: "existeUsuario" },
+			dataType: 'text',
+			async: false
+		}).responseText;
+		if (!datos && nombre != nombreActual) {
+			document.getElementById("mensajeUsuario").style.display = "block";
+		} else
+			document.getElementById("mensajeUsuario").style.display = "none";
+	});
 
 }
 
 function guardarDatos() {
-	nombre = document.getElementById("usuario_card").innerHTML.split("/")[0];
-	nombre = nombre.substring(0, nombre.length - 1);
-	usuarioAnterior = nombre;
+	if (document.getElementById("mensajeUsuario").style.display == "block") {
+		alert("Formulario incorrecto");
+	} else {
+		nombre = document.getElementById("usuario_card").innerHTML.split("/")[0];
+		nombre = nombre.substring(0, nombre.length - 1);
+		usuarioAnterior = nombre;
 
-	resultado = $.ajax({
-		url: 'Recursos/php/gestionPerfiles.php',
-		data: {
-			funcion: "actualizarUsuario", usuario: document.getElementById("user_user").value, usuarioAnterior: usuarioAnterior,
-			correo: document.getElementById("email_user").value, nombre: document.getElementById("name_user").value,
-			apellidos: document.getElementById("lastname_user").value, direccion: document.getElementById("direction_user").value,
-			ciudad: document.getElementById("city_user").value, pais: document.getElementById("country_user").value, nivel: document.getElementById("status").value
-		},
-		dataType: 'text',
-		async: false
-	}).responseText
+		resultado = $.ajax({
+			url: 'Recursos/php/gestionPerfiles.php',
+			data: {
+				funcion: "actualizarUsuario", usuario: document.getElementById("user_user").value, usuarioAnterior: usuarioAnterior,
+				correo: document.getElementById("email_user").value, nombre: document.getElementById("name_user").value,
+				apellidos: document.getElementById("lastname_user").value, direccion: document.getElementById("direction_user").value,
+				ciudad: document.getElementById("city_user").value, pais: document.getElementById("country_user").value, nivel: document.getElementById("status").value
+			},
+			dataType: 'text',
+			async: false
+		}).responseText
 
-	location.reload();
-
+		location.reload();
+	}
 }
 
 function anadirUsuario() {
-
+	nombreActual = "";
 	document.getElementById('edicion-card-usuarios').showModal()
 	document.getElementById("bloque_psswd").style.display = "block";
 	document.getElementById("email_user").value = "N/A";
@@ -153,13 +174,31 @@ function anadirUsuario() {
         }
 	});
 
+	var usuario = document.getElementById("user_user");
+
+	usuario.addEventListener("input", function () {
+		nombre = document.getElementById("user_user").value;
+		var datos = $.ajax({
+			url: 'Recursos/php/gestionPerfiles.php',
+			data: { nombre: nombre, funcion: "existeUsuario" },
+			dataType: 'text',
+			async: false
+		}).responseText;
+		if (!datos && nombre != nombreActual) {
+			document.getElementById("mensajeUsuario").style.display = "block";
+		} else
+			document.getElementById("mensajeUsuario").style.display = "none";
+	});
+
 
 }
 
 function anadirDatos() {
 	if (document.getElementById("name_user").value == "" || document.getElementById("lastname_user").value == "" || document.getElementById("user_user").value == "" || document.getElementById("psswd_user").value == "" || document.getElementById("npsswd_user").value == "") {
 		alert("Formulario incompleto");
-	} else {
+	} else if (document.getElementById("mensajeUsuario").style.display == "block" || document.getElementById("mensajeContrasena").style.display == "block") {
+		alert("Formulario incorrecto");
+    } else {
 		resultado = $.ajax({
 			url: 'Recursos/php/gestionPerfiles.php',
 			data: {
@@ -193,7 +232,6 @@ function mostrarUsuario(nombre) {
 	document.getElementById("pais_card").innerHTML = datos [6];
 	document.getElementById("ciudad_card").innerHTML = datos[7];
 	document.getElementById("direccion_card").innerHTML = datos[8];
-
 
 
 	document.getElementById("card-usuarios").showModal();

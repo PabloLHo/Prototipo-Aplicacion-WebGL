@@ -2,10 +2,21 @@
 	Estilo del mapa que se muestra en la página principal
  */
 
-.map {
-    height: 90%;
-    width: 100%;
+#principal{
+	margin: auto;
 }
+
+.map {
+	height: 80%;
+	width: 95%;
+	margin: auto;
+
+}
+
+.tituloMapa {
+	text-shadow: 17px -26px 1px #AEFAAF
+}
+
 
 .mousePosition {
 	position: absolute;

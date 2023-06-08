@@ -33,9 +33,9 @@ function mostrarParcelas($conexion){
     $usuario = $_REQUEST["usuario"];
     $resConsulta;
     if($permisos == "ADMIN"){
-        $resConsulta=$conexion->query("Select * FROM geometria_parcela WHERE ortofoto = 1 OR nubePuntos = 1");
+        $resConsulta=$conexion->query("Select * FROM datos_parcela");
     }else{
-        $resConsulta=$conexion->query("Select * FROM geometria_parcela WHERE id_recinto in (SELECT id_Parcela from parcelas_usuario WHERE id_usuario = ".$usuario.")");
+        $resConsulta=$conexion->query("Select * FROM datos_parcela WHERE id_Parcela in (SELECT id_Parcela from parcelas_usuario WHERE id_usuario = ".$usuario.")");
     }
     $numParcelas = 0;
     $nivel = $_REQUEST["nivel"];
@@ -55,6 +55,7 @@ function mostrarParcelas($conexion){
                             <th> Mapa altura </th>
                             <th> Fecha actualizacion </th>
                             <th> Fecha vuelo </th>
+                            <th>Historico</th>
                             <th></th>
                          </tr>
                      </thead>
@@ -62,14 +63,14 @@ function mostrarParcelas($conexion){
 
     while($filaConsulta = $resConsulta->fetch_array(MYSQLI_BOTH)){
         $numParcelas = $numParcelas + 1;
-        $area = calculoSuperficie($filaConsulta["id_recinto"],$conexion);
-        $pdteMedia = calculoPendiente($filaConsulta["id_recinto"],$conexion);
-        $resConsulta3=$conexion->query("Select * FROM parcela WHERE id_recinto = ".$filaConsulta['id_recinto']."");
+        $area = calculoSuperficie($filaConsulta["id_Parcela"],$conexion);
+        $pdteMedia = calculoPendiente($filaConsulta["id_Parcela"],$conexion);
+        $resConsulta3=$conexion->query("Select * FROM parcela WHERE id_recinto = ".$filaConsulta['id_Parcela']."");
         $filaConsulta3 = $resConsulta3->fetch_array(MYSQLI_BOTH);
         $resConsulta2=$conexion->query("SELECT nombre,provincia FROM municipios_andalucia WHERE cod_mun = ".$filaConsulta3['cd_mun']." AND cod_prov = ".$filaConsulta3['cd_prov']."");
         $filaConsulta2 = $resConsulta2->fetch_array(MYSQLI_BOTH);
-        $resConsulta4=$conexion->query("Select * FROM datos_parcela WHERE id_Parcela = ".$filaConsulta['id_recinto']."");
-        $filaConsulta4 = $resConsulta4->fetch_array(MYSQLI_BOTH);
+        $fechaVuelo = $filaConsulta["fecha_vuelo"];
+        $fechaActualizacion = $filaConsulta["fecha_actualizacion"];
         $ortofoto = "NO";
         if($filaConsulta["ortofoto"])
             $ortofoto = "SI";
@@ -83,7 +84,7 @@ function mostrarParcelas($conexion){
         if($tipo == "anterior"){
             if($numParcelas < $nivel and $numParcelas >= ($nivel - 10)){
                 $cadena = $cadena . '<tr>
-                                <td><a href="#" onclick=mostrarParcela("'.$filaConsulta['id_recinto'].'") >'.$filaConsulta["id_recinto"].'</a></td>
+                                <td><a href="#" onclick=mostrarParcela("'.$filaConsulta['id_Parcela'].'") >'.$filaConsulta["id_Parcela"].'</a></td>
                                 <td>'.$filaConsulta2["provincia"].'</td>
                                 <td>'.$filaConsulta2["nombre"].'</td>
                                 <td>'.$area.'</td>
@@ -91,15 +92,16 @@ function mostrarParcelas($conexion){
                                 <td>'.$nube.'</td>
                                 <td>'.$ortofoto.'</td>
                                 <td>'.$altura.'</td>
-                                <td>'.$filaConsulta4["fecha_actualizacion"].'</td>
-                                <td>'.$filaConsulta4["fecha_vuelo"].'</td>
-                                <td><button class="custom-btn btn-5" onclick=location.href="InformacionParcela.php?modelo='.$filaConsulta["id_recinto"].'"> Ir a la parcela</button></td>
+                                <td>'.$fechaActualizacion.'</td>
+                                <td>'.$fechaVuelo.'</td>
+                                <td><button class="custom-btn btn-5" onclick=muestraHistorico('.$filaConsulta["id_Parcela"].')> Editar Historico</button></td>
+                                <td><button class="custom-btn btn-5" onclick=location.href="InformacionParcela.php?modelo='.$filaConsulta["idParcela"].'"> Ir a la parcela</button></td>
                                </tr>';
             }    
         }else{
-            if($numParcelas <= ($nivel + 10) and $numParcelas >= $nivel){
+            if($numParcelas < ($nivel + 10) and $numParcelas >= $nivel){
                 $cadena = $cadena . '<tr>
-                                <td><a href="#" onclick=mostrarParcela("'.$filaConsulta['id_recinto'].'") >'.$filaConsulta["id_recinto"].'</a></td>
+                                <td><a href="#" onclick=mostrarParcela("'.$filaConsulta['id_Parcela'].'") >'.$filaConsulta["id_Parcela"].'</a></td>
                                 <td>'.$filaConsulta2["provincia"].'</td>
                                 <td>'.$filaConsulta2["nombre"].'</td>
                                 <td>'.$area.'</td>
@@ -107,9 +109,10 @@ function mostrarParcelas($conexion){
                                 <td>'.$nube.'</td>
                                 <td>'.$ortofoto.'</td>
                                 <td>'.$altura.'</td>
-                                <td>'.$filaConsulta4["fecha_actualizacion"].'</td>
-                                <td>'.$filaConsulta4["fecha_vuelo"].'</td>
-                                <td><button class="custom-btn btn-5" onclick=location.href="InformacionParcela.php?modelo='.$filaConsulta["id_recinto"].'"> Ir a la parcela</button></td>
+                                <td>'.$fechaActualizacion.'</td>
+                                <td>'.$fechaVuelo.'</td>
+                                <td><button class="custom-btn btn-5" onclick=muestraHistorico('.$filaConsulta["id_Parcela"].')> Editar Historico</button></td>
+                                <td><button class="custom-btn btn-5" onclick=location.href="InformacionParcela.php?modelo='.$filaConsulta["id_Parcela"].'"> Ir a la parcela</button></td>
                                </tr>';
                 $mostrado = $mostrado + 1;
             }
@@ -124,6 +127,7 @@ function mostrarParcelas($conexion){
                         <br>
                         <div class="row">
                             <div class="col-md-6 align-self-center">';
+    $mostradoAnterior = 0;
     if($numParcelas <= 10)
         $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando parcelas del 1 al '.$numParcelas.'</p>';
     else {
@@ -132,26 +136,28 @@ function mostrarParcelas($conexion){
                 $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando parcelas del 1 al 10 de '.$numParcelas.'</p>';	
                 break;
             case 'siguiente':
-                if(($numParcelas - $nivel) > 10){
+                if(($numParcelas - $nivel) >= 10){
+                    $mostradoAnterior = $mostrado - 10;
                     $aux = $nivel + 10;
                 }else{
+                    $mostradoAnterior = $mostrado - $mostrado % 10 + 1;
                     $aux = $numParcelas;
                 }
                 $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando parcelas del '.$nivel.' al '.$aux.' de '.$numParcelas.'</p>';	
                 break;
             case 'anterior':
-                $aux = $nivel - 9;
-                $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando parcelas del '.$aux.' al '.$nivel.' de '.$numParcelas.'</p>';	
+                $mostradoAnterior = $mostrado - 10;
+                $aux = $nivel - 10;
+                $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando parcelas del '.$aux.' al '.($nivel - 1).' de '.$numParcelas.'</p>';	
                 break;
         }
     }
-    if($nivel != 0)
-        $mostrado = $mostrado - $mostrado % $nivel;
+
     $cadena = $cadena . '</div>
                              <div class="col-md-6">
                                 <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
                                      <ul class="pagination">
-                                         <li class="page-item disabled" id="disabled"><button class="page-link" aria-label="Previous" id="anterior" onclick ="anterioresUsuarios('.$mostrado.')"><span aria-hidden="true">Anterior</span></li>
+                                         <li class="page-item disabled" id="disabled"><button class="page-link" aria-label="Previous" id="anterior" onclick ="anterioresUsuarios('.$mostradoAnterior.')"><span aria-hidden="true">Anterior</span></li>
                                          <li class="page-item" id="post"><button class="page-link" aria-label="Next" id="siguiente" onclick ="siguientesUsuarios('.$mostrado.', '.$numParcelas.')"><span aria-hidden="true">Siguiente</span></li>
                                       </ul>
                                  </nav>
@@ -196,7 +202,7 @@ function mostrarParcela($conexion){
     $resConsulta3=$conexion->query("Select * FROM parcela WHERE id_recinto = ".$parcela."");
     $filaConsulta3 = $resConsulta3->fetch_array(MYSQLI_BOTH);
         
-    $resConsulta4=$conexion->query("Select * FROM geometria_parcela WHERE id_recinto = ".$parcela."");
+    $resConsulta4=$conexion->query("Select * FROM geometria_parcela WHERE id_Parcela = ".$parcela."");
     $filaConsulta4 = $resConsulta4->fetch_array(MYSQLI_BOTH);
 
     $resConsulta2=$conexion->query("SELECT nombre,provincia FROM municipios_andalucia WHERE cod_mun = ".$filaConsulta3['cd_mun']." AND cod_prov = ".$filaConsulta3['cd_prov']."");
@@ -240,7 +246,7 @@ function actualizarNube($conexion){
 
     $parcela = $_REQUEST["parcela"];
 
-    $resConsulta=$conexion->query("UPDATE geometria_parcela SET nubePuntos = 1 WHERE id_recinto = '".$parcela."'");
+    $resConsulta=$conexion->query("UPDATE geometria_parcela SET nubePuntos = 1 WHERE id_Parcela = '".$parcela."'");
 
 }
 
@@ -248,7 +254,7 @@ function actualizarOrtofoto($conexion){
 
     $parcela = $_REQUEST["parcela"];
 
-    $resConsulta=$conexion->query("UPDATE geometria_parcela SET ortofoto = 1 WHERE id_recinto = '".$parcela."'");
+    $resConsulta=$conexion->query("UPDATE geometria_parcela SET ortofoto = 1 WHERE id_Parcela = '".$parcela."'");
 
 }
 
@@ -256,7 +262,7 @@ function actualizarMapaAltura($conexion){
 
     $parcela = $_REQUEST["parcela"];
 
-    $resConsulta=$conexion->query("UPDATE geometria_parcela SET MapaAltura = 1 WHERE id_recinto = '".$parcela."'");
+    $resConsulta=$conexion->query("UPDATE geometria_parcela SET MapaAltura = 1 WHERE id_Parcela = '".$parcela."'");
 
 }
 

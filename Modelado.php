@@ -5,14 +5,11 @@ session_start();
 
 $clave = $_SESSION['usuario'];
 
-if( $clave == null ){
+if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 	header("location:index.php");
 };
-
-if(time() - $_SESSION['tiempo'] > 43200){
-	header("location:index.php");
-}
 ?>
+
 
 <html lang="es">
   <head>
@@ -23,7 +20,7 @@ if(time() - $_SESSION['tiempo'] > 43200){
 
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" type="text/css" href="Recursos/css/bootstrap.min.css" media="all">
-		
+		<link rel="icon" type="image/x-icon" href="Recursos/imagenes/logo.png">
 		<!-- CSS propio -->
 		<link rel="stylesheet" href="Recursos/css/renderCanvas.css">
 		<link rel="stylesheet" href="Recursos/css/mensajes.css">
@@ -58,12 +55,10 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<!-- Javascript propio -->
 		
 		<script src="Recursos/js/Modelo/escena.js"></script>
-		<script src="Recursos/js/Modelo/Control/recorte.js"></script>
-		<script type="text/javascript" src="Recursos/js/openCV/oliveTreeDetection.js"></script>
-		<script src="Recursos/js/OpenCV/OpenCV-4.7.0.js" type="text/javascript"></script>
+		<script src="Recursos/js/Modelo/Control/algoritmos.js"></script>
 		
 
-		<title>Gemelo Digital</title>
+		<title>Escena 3D</title>
 	
 	</head>
   
@@ -73,8 +68,26 @@ if(time() - $_SESSION['tiempo'] > 43200){
 		<script src="Recursos/js/Modelo/Control/gui.js"></script>
 			
 		<div id="mensaje" class="info-msg" style="width: 100%; position: absolute">
-			<a href=""><i class="fa fa-times "></i>
+			<a>
 				Cargando nube de puntos. Espere a la finalización
+			</a>                   
+	    </div>
+
+		<div id="recorte" class="info-msg" style="width: 100%; position: absolute; display: none">
+			<a>
+				Para finalizar el recorte doble clic en el vertice previo al cierre del poligono
+			</a>                   
+	    </div>
+
+		<div id="seleccion" class="info-msg" style="width: 100%; position: absolute; display: none">
+			<a onclick="document.getElementById('seleccion').style.display = 'none'"><i class="fa fa-times "></i>
+				Para recortar usar visión cenital
+			</a>                   
+	    </div>
+
+		<div id="deteccion" class="info-msg" style="width: 100%; position: absolute; display: none">
+			<a onclick="document.getElementById('deteccion').style.display = 'none'"><i class="fa fa-times "></i>
+				Para la detección usar una capa de información con la textura disponible
 			</a>                   
 	    </div>
 

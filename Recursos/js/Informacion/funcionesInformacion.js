@@ -23,39 +23,27 @@ window.onload = function() {
 	} else{
 		alert("NO_ENCONTRADO");
 	}
+
 	pagina = url.substring(0,url.indexOf("?"));
 	pagina = pagina.substring(pagina.lastIndexOf("/")+1, pagina.length).toLowerCase();
 	valor = valor.toLowerCase();
+
 	if(valor.indexOf("#") != -1){
 		valor = valor.substring(0, valor.indexOf("#"));
 	}
-	if(pagina == "informacionseleccion.php"){
-		valor = valor.split("/");
-		if(valor.length > 2){
-			valor2 = valor[0]
-			valor2 = valor2[0].toUpperCase() + valor2.slice(1);
-			x1 = valor[1];
-			y1 = valor[2];
-			x2 = valor[3];
-			y2 = valor[4];
-			muestraNubeRecortada(valor2, valor[1], valor[2],valor[3],valor[4]);
-		}
-		//Si tenemos 2 datos tendremos un olivo (nombre y olivo en cuestión)
-		else if(valor.length == 2){
-			valor[0] = valor[0][0].toUpperCase() + valor[0].slice(1);
-			muestraModeloOlivo(valor[0], valor[1]);
-		}
-		//En caso contrario con 1 dato tendremos una parcela completa
-		else{
-			valor[0] = valor[0][0].toUpperCase() + valor[0].slice(1);
-			muestraNube(valor[0]);
-		}
-		nombre_Modelo = valor[0];
-	}else{
-		nombre_Modelo = valor;
-	}
+
+	nombre_Modelo = valor;
 	muestraInfo();
-	document.getElementById("cargaModelo").onclick = function irModelo(){	location.href = "Modelado.php?modelo=" + nombre_Modelo; };
+	document.getElementById("cargaModelo").onclick = function irModelo() { location.href = "Modelado.php?modelo=" + nombre_Modelo; };
+
+	var datos = $.ajax({
+		url: 'Recursos/php/gestionPerfiles.php',
+		data: { nombre: document.getElementById("onload").innerHTML, funcion: "permisos" },
+		dataType: 'text',
+		async: false
+	}).responseText;
+
+	document.getElementById("fotoPerfilNav").src = "Recursos/imagenes/usuarios/" + datos.split("&")[1];
 }
 
 
@@ -142,30 +130,53 @@ function imprimir(){
 
 }
 
-function calculoGrafica(tipo, id, nombre ,tiempo){
-	const labels = [new Date('2022-09-01T00:00:00'), new Date('2022-09-02T00:00:00'), new Date('2022-09-03T00:00:00'), new Date('2022-09-04T00:00:00'), new Date('2022-09-05T00:00:00'), new Date('2022-09-06T00:00:00'), new Date('2022-09-07T00:00:00'),
-	new Date('2022-09-08T00:00:00'), new Date('2022-09-09T00:00:00'), new Date('2022-09-10T00:00:00'), new Date('2022-09-11T00:00:00'), new Date('2022-09-12T00:00:00'), new Date('2022-09-13T00:00:00'), new Date('2022-09-14T00:00:00'),
-	new Date('2022-09-15T00:00:00'), new Date('2022-09-16T00:00:00'), new Date('2022-09-17T00:00:00'), new Date('2022-09-18T00:00:00'), new Date('2022-09-19T00:00:00'), new Date('2022-09-20T00:00:00'), new Date('2022-09-21T00:00:00'),
-	new Date('2022-09-22T00:00:00'), new Date('2022-09-23T00:00:00'), new Date('2022-09-24T00:00:00'), new Date('2022-09-25T00:00:00'), new Date('2022-09-26T00:00:00'), new Date('2022-09-27T00:00:00'), new Date('2022-09-28T00:00:00'), 
-	new Date('2022-09-29T00:00:00'), new Date('2022-09-30T00:00:00'), new Date('2022-10-01T00:00:00'), new Date('2022-10-02T00:00:00'), new Date('2022-10-03T00:00:00'), new Date('2022-10-04T00:00:00'), new Date('2022-10-05T00:00:00'), new Date('2022-10-06T00:00:00'), new Date('2022-10-07T00:00:00'),
-	new Date('2022-10-08T00:00:00'), new Date('2022-10-09T00:00:00'), new Date('2022-10-10T00:00:00'), new Date('2022-10-11T00:00:00'), new Date('2022-10-12T00:00:00'), new Date('2022-10-13T00:00:00'), new Date('2022-10-14T00:00:00'),
-	new Date('2022-10-15T00:00:00'), new Date('2022-10-16T00:00:00'), new Date('2022-10-17T00:00:00'), new Date('2022-10-18T00:00:00'), new Date('2022-10-19T00:00:00'), new Date('2022-10-20T00:00:00'), new Date('2022-10-21T00:00:00'),
-	new Date('2022-10-22T00:00:00'), new Date('2022-10-23T00:00:00'), new Date('2022-10-24T00:00:00'), new Date('2022-10-25T00:00:00'), new Date('2022-10-26T00:00:00'), new Date('2022-10-27T00:00:00'), new Date('2022-10-28T00:00:00'), 
-	new Date('2022-10-29T00:00:00'), new Date('2022-10-30T00:00:00'), new Date('2022-10-31T00:00:00'), new Date('2022-11-01T00:00:00'), new Date('2022-11-02T00:00:00'), new Date('2022-11-03T00:00:00'), new Date('2022-11-04T00:00:00'), new Date('2022-11-05T00:00:00'), new Date('2022-11-06T00:00:00'), new Date('2022-11-07T00:00:00'),
-	new Date('2022-11-08T00:00:00'), new Date('2022-11-09T00:00:00'), new Date('2022-11-10T00:00:00'), new Date('2022-11-11T00:00:00'), new Date('2022-11-12T00:00:00'), new Date('2022-11-13T00:00:00'), new Date('2022-11-14T00:00:00'),
-	new Date('2022-11-15T00:00:00'), new Date('2022-11-16T00:00:00'), new Date('2022-11-17T00:00:00'), new Date('2022-11-18T00:00:00'), new Date('2022-11-19T00:00:00'), new Date('2022-11-20T00:00:00'), new Date('2022-11-21T00:00:00'),
-	new Date('2022-11-22T00:00:00'), new Date('2022-11-23T00:00:00'), new Date('2022-11-24T00:00:00'), new Date('2022-11-25T00:00:00'), new Date('2022-11-26T00:00:00'), new Date('2022-11-27T00:00:00'), new Date('2022-11-28T00:00:00'), 
-	new Date('2022-11-29T00:00:00'), new Date('2022-11-30T00:00:00')];
-	const data2 = [];
+function calculoGrafica(nombre, tiempo, ejeY) {
+	fechas = [];
+	datos = [];
+	aux = nombre.toLowerCase();
+	$.ajax({
+		url: 'Recursos/php/obtenerHistorico.php',
+		data: { funcion: 'Datos', aspecto: aux, parcela: nombre_Modelo },
+		dataType: 'json',
+		success: function (response) {
+			fechas = response["Fechas"];
+			datos = response["Datos"];
+			creacionGrafica(nombre, ejeY, fechas, datos);
+		}
+	});
 
-	for (let i = 0; i < 91; ++i) {
-		data2.push(Math.random() * 20);
+}
+
+function creacionGrafica(nombre, ejeY, fechas, datos){
+
+	const data2 = [];
+	const fechas2 = [];
+
+	for (var i = 0; i < datos.length; i++) {
+		data2.push(parseFloat(datos[i]));
 	}
-	var r = Math.random() * 255;
-	var g = Math.random() * 255;
-	var b = Math.random() * 255;
+
+	document.getElementById("slider_" + nombre.toLowerCase()).min = 4;
+	document.getElementById("slider_" + nombre.toLowerCase()).value = datos.length;
+	document.getElementById("slider_" + nombre.toLowerCase()).max = datos.length;
+
+	document.getElementById("slider_" + nombre.toLowerCase()).oninput = function () {
+		var valor = document.getElementById("slider_" + nombre.toLowerCase()).value;
+		myChart.config.data.labels = fechas.slice(fechas.length - valor, fechas.length);
+		myChart.config.data.datasets[0].data = data2.slice(data2.length - valor, data2.length);
+		if (valor < 12 && nombre != "Produccion")
+			myChart.config.options.scales.x.time.unit = "week";
+		else
+			myChart.config.options.scales.x.time.unit = "month";
+		myChart.update();
+
+	};
+
+	var r = 0;
+	var g = 255;
+	var b = 0;
 	const data = {
-		labels: labels,
+		labels: fechas,
 		datasets: [{
 			label: nombre,
 			backgroundColor: 'rgb(' + r + ',' + g + ',' + b +')',
@@ -175,24 +186,20 @@ function calculoGrafica(tipo, id, nombre ,tiempo){
 	};
 
 	const config = {
-	  type: tipo,
+	  type: 'line',
 	  data: data,
 	  options: {
-		// maintainAspectRatio : true,
 		scales: {
 		  x: {
 			type: "time",
 			title: {
-			  display: true,
+				display: true,
+
 			  text: 'Fecha recogida de datos'
 			},
 			time: {
-				unit: tiempo,
-				isoWeekday: true,
+				unit: 'month',
 				stepSize: 1
-			},
-			grid: {
-				color: 'rgb(0,0,0)'
 			},
 			ticks: {
 				display: true,
@@ -202,74 +209,76 @@ function calculoGrafica(tipo, id, nombre ,tiempo){
 		  y: {
 			title: {
 			  display: true,
-			  text: 'Kg / m2'
+			  text: ejeY
 			}
 		  }
 		}
 	  },
 	};
 	
-	const myChart = new Chart( document.getElementById(id),config);
+	const myChart = new Chart(document.getElementById(nombre), config);
 	myChart.canvas.parentNode.style.width = '100%';
 
 }
 
 function sobresaltar(id) {
+
 	if (Chart.getChart('SobrePuesta')) {
 		let chartStatus = Chart.getChart('SobrePuesta'); // <canvas> id
 		chartStatus.destroy();
 	}
+
 	document.getElementById("Grafica").show();
 	document.getElementById("Grafica").style.zIndex = 4000;
+
+	fechas = Chart.getChart(id).config.data.labels;
+	datos = Chart.getChart(id).config.data.datasets[0].data;
+	document.getElementById("slider_SobrePuesta").min = 4;
+	document.getElementById("slider_SobrePuesta").max = datos.length;
+	document.getElementById("slider_SobrePuesta").value = datos.length;
+
 	const myChart = new Chart(document.getElementById('SobrePuesta'), Chart.getChart(id).config);
-	//calculoGrafica('line', 'SobrePuesta', id, 'week');
+
+	document.getElementById("slider_SobrePuesta").oninput = function () {
+		var valor = document.getElementById("slider_SobrePuesta").value;
+		myChart.config.data.labels = fechas.slice(fechas.length - valor, fechas.length);
+		myChart.config.data.datasets[0].data = datos.slice(datos.length - valor, datos.length);
+
+		if (valor < 12 && id != "Produccion")
+			myChart.config.options.scales.x.time.unit = "week";
+		else
+			myChart.config.options.scales.x.time.unit = "month";
+		myChart.update();
+		
+
+	};
 }
 
-function actualizarGrafica(tipo, nombre){
-	let chartStatus = Chart.getChart(nombre); // <canvas> id
-	chartStatus.config.type = tipo;
-	var config = chartStatus.config;
-	chartStatus.destroy();
-	const myChart = new Chart( document.getElementById(nombre),config);
-}
-
-function actualizarFormatoGrafica(tipo, nombre){
-	let chartStatus = Chart.getChart(nombre); // <canvas> id
-	if(tipo == 'year'){
-		chartStatus.config.options.scales.x.ticks.source = 'data';
-	}else{
-		chartStatus.config.options.scales.x.ticks.source = 'auto';
-	}
-	chartStatus.config.options.scales.x.time.unit = tipo;
-	var config = chartStatus.config;
-	chartStatus.destroy();
-	const myChart = new Chart( document.getElementById(nombre),config);
-}
 
 
 function muestraPrincipal(){
 	document.getElementById("Principal").style.display = "block";
 	document.getElementById("Historico").style.display = "none";
 	document.getElementById("Zonas").style.display = "none";
-	document.getElementById("Prediccion").style.display = "none";
 }
 
 function muestraZonas(){
 	document.getElementById("Principal").style.display = "none";
 	document.getElementById("Historico").style.display = "none";
 	document.getElementById("Zonas").style.display = "block";
-	document.getElementById("Prediccion").style.display = "none";
 }
 
-function muestraHistorico(){
+function muestraHistorico() {
+
 	document.getElementById("Principal").style.display = "none";
 	document.getElementById("Historico").style.display = "block";
 	document.getElementById("Zonas").style.display = "none";
-	document.getElementById("Prediccion").style.display = "none";
-	calculoGrafica('line', 'Produccion_Anual', "Produccion" ,'week');
-	calculoGrafica('line', 'Temperatura_Media', "Temperatura" ,'week');
-	calculoGrafica('bar', 'Precipitaciones', "Precipitaciones" ,'week');
-	calculoGrafica('line', 'Humedad', "Humedad" ,'week');
+
+	calculoGrafica('Produccion', 'week', "Kg");
+	calculoGrafica("Temperatura" ,'week', "Grados");
+	calculoGrafica("Precipitaciones" ,'week', "L/ha");
+	calculoGrafica("Humedad", 'week', "%");
+
 }
 
 

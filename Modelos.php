@@ -5,40 +5,87 @@ session_start();
 
 $clave = $_SESSION['usuario'];
 
-if( $clave == null ){
+if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 	header("location:index.php");
 };
-
-if(time() - $_SESSION['tiempo'] > 43200){
-	header("location:index.php");
-}
 ?>
 
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Profile - Brand</title>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+		<link rel="icon" type="image/x-icon" href="Recursos/imagenes/logo.png">
+		<title>Profile</title>
 
-    <link rel="stylesheet" href="Recursos/css/bootstrap.min.css">
-     <link rel="stylesheet" href="Recursos/css/userCard.css">
-    <link rel="stylesheet" href="Recursos/css/botones.css">
-    <link rel="stylesheet" href="Recursos/css/files.css">
-    <link rel="stylesheet" type="text/css" href="Recursos/css/dashboard.css" media="all">
-    <link rel="stylesheet" href="Recursos/fonts/fontawesome-all.min.css">
-    <link rel="stylesheet" href="Recursos/css/mensajes.css">
-	<link rel="stylesheet" href="Recursos/css/responsive.css">
+		<link rel="stylesheet" href="Recursos/css/bootstrap.min.css">
+		 <link rel="stylesheet" href="Recursos/css/userCard.css">
+		<link rel="stylesheet" href="Recursos/css/botones.css">
+		<link rel="stylesheet" href="Recursos/css/files.css">
+		<link rel="stylesheet" type="text/css" href="Recursos/css/dashboard.css" media="all">
+		<link rel="stylesheet" href="Recursos/fonts/fontawesome-all.min.css">
+		<link rel="stylesheet" href="Recursos/css/mensajes.css">
+		<link rel="stylesheet" href="Recursos/css/responsive.css">
 
-	<script src="Recursos/js/Externo/jquery-6.0.0-min.js"></script>
-	<script src="Recursos/js/Externo/Bootstrap/bootstrap.bundle.js"></script>
-	<script src="Recursos/js/Externo/Bootstrap/bootstrap.js"></script>
-    <script src="Recursos/js/Externo/Bootstrap/bootstrap.min.js"></script>
-    <script src="Recursos/js/Externo/theme.js"></script>
-    <script src="Recursos/js/Informacion/gestionModelos.js"></script>
-</head>
+		<script src="Recursos/js/Externo/jquery-6.0.0-min.js"></script>
+		<script src="Recursos/js/Externo/Bootstrap/bootstrap.bundle.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+		<script src="Recursos/js/Externo/Bootstrap/bootstrap.js"></script>
+		<script src="Recursos/js/Externo/Bootstrap/bootstrap.min.js"></script>
+		<script src="Recursos/js/Externo/theme.js"></script>
+		<script src="Recursos/js/Informacion/gestionModelos.js"></script>
+		<script src="Recursos/js/Informacion/csvImporter.js"></script>
+	</head>
 
-<body id="page-top">
+	<style>
+		.switch-field {
+			display: flex;
+			margin-bottom: 36px;
+			overflow: hidden;
+		}
+
+		.switch-field input {
+			position: absolute !important;
+			clip: rect(0, 0, 0, 0);
+			height: 1px;
+			width: 1px;
+			border: 0;
+			overflow: hidden;
+		}
+
+		.switch-field label {
+			background-color: #e4e4e4;
+			color: rgba(0, 0, 0, 0.6);
+			font-size: 14px;
+			line-height: 1;
+			text-align: center;
+			padding: 8px 16px;
+			margin-right: -1px;
+			border: 1px solid rgba(0, 0, 0, 0.2);
+			box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+			transition: all 0.1s ease-in-out;
+		}
+
+		.switch-field label:hover {
+			cursor: pointer;
+		}
+
+		.switch-field input:checked + label {
+			background-color: #a5dc86;
+			box-shadow: none;
+		}
+
+		.switch-field label:first-of-type {
+			border-radius: 4px 0 0 4px;
+		}
+
+		.switch-field label:last-of-type {
+			border-radius: 0 4px 4px 0;
+		}
+	</style>
+
+	<body id="page-top">
     <div id="wrapper">
         <nav class="navbar align-items-start sidebar sidebar-dark accordion p-0" style="background-color: rgb(0,187,45);">
 				<div class="container-fluid d-flex flex-column p-0">
@@ -113,8 +160,9 @@ if(time() - $_SESSION['tiempo'] > 43200){
             </footer>
         </div>
     </div>
-			<dialog id="card-parcelas" style="width: 75%">
-                <div class="modal-header">
+			
+	<dialog id="card-parcelas" style="width: 75%">    
+		<div class="modal-header">
 				    <a class="button cross" onclick="document.getElementById('card-parcelas').close(); document.getElementById('aux1').value = '';document.getElementById('aux2').value = '';document.getElementById('aux3').value = ''"></a>
 					<h4 class="modal-title" style="width: auto">Parcela</h4>
 				</div>
@@ -205,6 +253,81 @@ if(time() - $_SESSION['tiempo'] > 43200){
 
 	            </div>
             </dialog>
-</body>
+
+			<dialog id="historico" style="width: 85%">
+				<div class="modal-header">
+				    <a class="button cross" onclick="document.getElementById('historico').close()"></a>
+					<h4 class="modal-title">Historico</h4>
+				</div>
+				<div class="user">
+					<div id="insercion" class="info-msg" style="width: 100%; position: absolute; display: none">
+						<a onclick="document.getElementById('insercion').style.display = 'none'"><i class="fa fa-times "></i>
+							Debe rellenar ambos campos
+						</a>                   
+					</div>
+
+					<div id="domingo" class="info-msg" style="width: 100%; position: absolute; display: none">
+						<a onclick="document.getElementById('domingo').style.display = 'none'"><i class="fa fa-times "></i>
+							La fecha debe ser un domingo, datos medios semanales
+						</a>                   
+					</div>
+					<div id="presente" class="info-msg" style="width: 100%; position: absolute; display: none">
+						<a onclick="document.getElementById('presente').style.display = 'none'"><i class="fa fa-times "></i>
+							Esta fecha ya se encuentra insertada
+						</a>                   
+					</div>
+					<br>
+					<div class="switch-field" style="margin-left: 2%">
+						<input type="radio" id="radio-temperatura" name="switch-two" value="temperatura" onclick="muestraHistoricoBoton(this.value)"/>
+						<label for="radio-temperatura" id="temperatura">Temperatura</label>
+						<input type="radio" id="radio-humedad" name="switch-two" value="humedad" onclick="muestraHistoricoBoton(this.value)" />
+						<label for="radio-humedad" id="humedad">Humedad</label>
+						<input type="radio" id="radio-precipitaciones" name="switch-two" value="precipitaciones" onclick="muestraHistoricoBoton(this.value)" />
+						<label for="radio-precipitaciones" id="precipitaciones">Precipitaciones</label>
+						<input type="radio" id="radio-produccion" name="switch-two" value="produccion" onclick="muestraHistoricoBoton(this.value)" />
+						<label for="radio-produccion" id="produccion">Producción</label>
+					</div>
+					<br>
+					<div id="historico_grafica" class="row" style="margin-left:2%">
+						<div class="col-6 card shadow" id="filaGrafica">
+							<div class="card-body" id="despliegueGrafica">
+								<canvas id="Grafica" ></canvas>
+							</div>
+						</div>		
+						<div class="col-5 card shadow" id="tablaHistorica">
+						
+						</div>
+					</div>
+				</div>
+			</dialog>
+
+			<dialog id="subirCSV" style="width: 40%">
+
+				<div class="modal-header">
+				    <a class="button cross" onclick="document.getElementById('subirCSV').close(); 
+													document.getElementById('boton_si').style.display = 'flex'; document.getElementById('boton_no').style.display = 'flex';
+													document.getElementById('csvFileInput').style.display = 'none'; document.getElementById('boton_guardar').style.display = 'none';
+													document.getElementById('mensajeAviso').style.display = 'flex'"></a>
+					<h4 class="modal-title">Subida CSV</h4>
+				</div>
+				<br>
+				<div id="ningunDato" class="info-msg" style="width: 100%; display: none">
+						<a onclick="document.getElementById('ningunDato').style.display = 'none'"><i class="fa fa-times "></i>
+							No se ha podido rescatar ningun dato correcto del documento o este esta vacio
+						</a>                   
+				</div>
+				<div id="malFormato" class="info-msg" style="width: 100%; display: none">
+						<a onclick="document.getElementById('malFormato').style.display = 'none'"><i class="fa fa-times "></i>
+							El formato de documento entregado no es correcto
+						</a>                   
+				</div>
+				<p id="mensajeAviso"> ¿Desea descargar el fichero estandar para la posterior subida de datos? </p>
+				<button id="boton_si" class="btn btn-primary btn-sm" onclick="descargarCSV(true)">Si</button>
+				<button id="boton_no" class="btn btn-primary btn-sm" onclick="descargarCSV(false)">No</button>
+				<input style="display: none" type="file" id="csvFileInput" accept=".csv"> </input>
+				<br>
+				<button  id="boton_guardar" style="display: none" class="btn btn-primary btn-sm" onclick="guardarDatosCSV()">Cargar</button>
+			</dialog>
+	</body>
 
 </html>

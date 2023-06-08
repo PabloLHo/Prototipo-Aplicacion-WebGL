@@ -20,6 +20,9 @@ $funcion = $_REQUEST['funcion'];
         case 'mostrarUsuarios':
             mostrarUsuarios($conexion);
             break;
+        case 'existeUsuario':
+            existeUsuario($conexion);
+            break;
     }
 
 
@@ -110,7 +113,7 @@ function mostrarUsuarios($conexion){
                                </tr>';
             }    
         }else{
-            if($numUsuarios <= ($nivel + 10) and $numUsuarios >= $nivel){
+            if($numUsuarios < ($nivel + 10) and $numUsuarios >= $nivel){
                 $cadena = $cadena . '<tr>
                                 <td class="col-1"><img style="width: 50%" class="border rounded-circle img-profile"  src="Recursos/imagenes/usuarios/'.$filaConsulta["fotoPerfil"].'"></td>
                                 <td><a href="#" onclick=mostrarUsuario("'.$filaConsulta['usuario'].'") /> '.$filaConsulta["nombre"].'</td>
@@ -131,6 +134,7 @@ function mostrarUsuarios($conexion){
                         <br>
                         <div class="row">
                             <div class="col-md-6 align-self-center">';
+    $mostradoAnterior = 0;
     if($numUsuarios <= 10)
         $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando usuarios del 1 al '.$numUsuarios.'</p>';
     else {
@@ -139,26 +143,28 @@ function mostrarUsuarios($conexion){
                 $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando usuarios del 1 al 10 de '.$numUsuarios.'</p>';	
                 break;
             case 'siguiente':
-                if(($numUsuarios - $nivel) > 10){
+                if(($numUsuarios - $nivel) >= 10){
+                    $mostradoAnterior = $mostrado - 10;
                     $aux = $nivel + 10;
                 }else{
+                    $mostradoAnterior = $mostrado - $mostrado % 10 + 1;
                     $aux = $numUsuarios;
                 }
                 $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando usuarios del '.$nivel.' al '.$aux.' de '.$numUsuarios.'</p>';	
                 break;
             case 'anterior':
-                $aux = $nivel - 9;
-                $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando usuarios del '.$aux.' al '.$nivel.' de '.$numUsuarios.'</p>';	
+                $mostradoAnterior = $mostrado - 10;
+                $aux = $nivel - 10;
+                $cadena = $cadena . '<p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Mostrando usuarios del '.$aux.' al '.($nivel - 1).' de '.$numUsuarios.'</p>';	
                 break;
         }
     }
-    if($nivel != 0)
-        $mostrado = $mostrado - $mostrado % $nivel;
+
     $cadena = $cadena . '</div>
                              <div class="col-md-6">
                                 <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
                                      <ul class="pagination">
-                                         <li class="page-item disabled" id="disabled"><button class="page-link" aria-label="Previous" id="anterior" onclick ="anterioresUsuarios('.$mostrado.')"><span aria-hidden="true">Anterior</span></li>
+                                         <li class="page-item disabled" id="disabled"><button class="page-link" aria-label="Previous" id="anterior" onclick ="anterioresUsuarios('.$mostradoAnterior.')"><span aria-hidden="true">Anterior</span></li>
                                          <li class="page-item" id="post"><button class="page-link" aria-label="Next" id="siguiente" onclick ="siguientesUsuarios('.$mostrado.', '.$numUsuarios.')"><span aria-hidden="true">Siguiente</span></li>
                                       </ul>
                                  </nav>
@@ -166,4 +172,15 @@ function mostrarUsuarios($conexion){
                         </div>&' . $numUsuarios;
 
     echo $cadena;
+}
+
+function existeUsuario($conexion){
+    $nombre = $_REQUEST["nombre"];
+    $resConsulta=$conexion->query("SELECT * FROM usuario WHERE usuario = '".$nombre."'");
+    $totalFilas = mysqli_num_rows($resConsulta);
+    if($totalFilas == 0){
+        echo true;
+    }else 
+        echo false;
+
 }

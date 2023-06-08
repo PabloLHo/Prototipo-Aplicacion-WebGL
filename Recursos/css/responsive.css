@@ -32,6 +32,33 @@
 		width: 100%
 	}
 
+	#fotoFecha {
+		flex-direction: column;
+	}
+
+	#tablas{
+		flex-direction: column;
+	}
+
+	#tabla_1{
+		width: 100%;
+	}
+
+	#tabla_2 {
+		width: 100%;
+	}
+
+	#historico_grafica {
+		flex-direction: column;
+	}
+
+	#tablaHistorica {
+		width: 100%;
+	}
+
+	#filaGrafica {
+		width: 100%;
+	}
 }
 
 
@@ -48,9 +75,9 @@
 		order: 2;
 		width: 100%
 	}
-	
-	#imagen_altura {
-		width: 50%
+
+	#fotoFecha {
+		flex-direction: column;
 	}
 	
 }

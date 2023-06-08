@@ -1,4 +1,7 @@
 /*Archivos JS encargado de las funciones de la interfaz perfil de usuario para control de modelos*/
+parcelaElegida = "";
+tipoActual = "";
+
 
 window.onload = function () {
 
@@ -35,7 +38,7 @@ function muestraModelos(datos) {
 
 	parcelas = $.ajax({
 		url: 'Recursos/php/gestionModelos.php',
-		data: { funcion: "mostrarParcelas", nivel: 0, tipo: "inicial", permisos: datos[0], usuario: datos[9] },
+		data: { funcion: "mostrarParcelas", nivel: 1, tipo: "inicial", permisos: datos[0], usuario: datos[9] },
 		dataType: 'text',
 		async: false
 	}).responseText;
@@ -63,15 +66,15 @@ function siguientesModelos(numero, total) {
 
 	usuarios = $.ajax({
 		url: 'Recursos/php/gestionModelos.php',
-		data: { funcion: "mostrarParcelas", nivel: numero + 1, tipo: "siguiente", permisos: datos, usuario: usuario },
+		data: { funcion: "mostrarParcelas", nivel: numero, tipo: "siguiente", permisos: datos, usuario: usuario },
 		dataType: 'text',
 		async: false
 	}).responseText;
 
-	document.getElementById("contenido_modelos").innerHTML = usuarios.split("&");
+	document.getElementById("contenido_modelos").innerHTML = usuarios.split("&")[0];
 	document.getElementById("disabled").className = "page-item";
 
-	if (numero >= total - 10) {
+	if (numero > total - 10) {
 		document.getElementById("post").className = "page-item disabled";
 	} else {
 		document.getElementById("disabled").className = "page-item ";
@@ -93,12 +96,12 @@ function anterioresModelos(numero) {
 
 	usuarios = $.ajax({
 		url: 'Recursos/php/gestionModelos.php',
-		data: { funcion: "mostrarParcelas", nivel: numero - 1, tipo: "anterior", permisos: datos, usuario: usuario },
+		data: { funcion: "mostrarParcelas", nivel: numero, tipo: "anterior", permisos: datos, usuario: usuario },
 		dataType: 'text',
 		async: false
 	}).responseText;
 
-	document.getElementById("contenido_modelos").innerHTML = usuarios.split("&");
+	document.getElementById("contenido_modelos").innerHTML = usuarios.split("&")[0];
 
 	document.getElementById("post").className = "page-item";
 
@@ -367,3 +370,313 @@ function incluirModelos() {
 	}
 }
 
+function calculoGrafica(nombre, ejeY, actual, total) {
+	if (Chart.getChart('Grafica')) {
+		let chartStatus = Chart.getChart('Grafica'); // <canvas> id
+		chartStatus.destroy();
+	}
+	fechas = [];
+	datos = [];
+	final = 0;
+	if ((actual + 10) > total)
+		final = total
+	else
+		final = actual + 10;
+	var aux = nombre.toLowerCase();
+	$.ajax({
+		url: 'Recursos/php/obtenerHistorico.php',
+		data: { funcion: 'Datos', aspecto: aux, parcela: parcelaElegida, numero: actual, final: final },
+		dataType: 'json',
+		success: function (response) {
+			fechas = response["Fechas"];
+			datos = response["Datos"];
+			creacionGrafica(nombre, ejeY, fechas, datos);
+		}
+	});
+
+}
+
+function creacionGrafica(nombre, ejeY, fechas, datos) {
+
+	const data2 = [];
+
+	for (var i = 0; i < datos.length; i++) {
+		data2.push(parseFloat(datos[i]));
+	}
+
+	var r = 0;
+	var g = 255;
+	var b = 0;
+	const data = {
+		labels: fechas,
+		datasets: [{
+			label: nombre,
+			backgroundColor: 'rgb(' + r + ',' + g + ',' + b + ')',
+			borderColor: 'rgb(' + r + ',' + g + ',' + b + ')',
+			data: data2,
+		}]
+	};
+
+	const config = {
+		type: 'line',
+		data: data,
+		options: {
+			scales: {
+				x: {
+					type: "time",
+					title: {
+						display: true,
+
+						text: 'Fecha recogida de datos'
+					},
+					time: {
+						unit: 'month',
+						stepSize: 1
+					},
+					ticks: {
+						display: true,
+						source: 'auto'
+					}
+				},
+				y: {
+					title: {
+						display: true,
+						text: ejeY
+					}
+				}
+			}
+		},
+	};
+
+	const myChart = new Chart(document.getElementById("Grafica"), config);
+	myChart.canvas.parentNode.style.width = '100%';
+
+}
+
+function editarCampo(bool, tipo) {
+	if (bool) {
+
+		document.getElementById("boton_" + tipo).innerHTML = "Guardar";
+		document.getElementById("boton_" + tipo).setAttribute("onclick", "editarCampo(false,'" + tipo + "')");
+		valor = document.getElementById(tipo + "_valor").innerHTML;
+		document.getElementById(tipo + "_valor").innerHTML = "<input type='number' id='" + tipo + "_valorNuevo'>"
+		document.getElementById(tipo + "_valorNuevo").placeholder = valor;
+
+	} else {
+		document.getElementById("boton_" + tipo).innerHTML = "Editar Campos";
+		document.getElementById("boton_" + tipo).setAttribute("onclick", "editarCampo(true,'" + tipo + "')");
+
+		valor;
+		if (document.getElementById(tipo + "_valorNuevo").value == "")
+			valor = document.getElementById(tipo + "_valor").innerHTML = document.getElementById(tipo + "_valorNuevo").placeholder;
+		else
+			valor = document.getElementById(tipo + "_valor").innerHTML = document.getElementById(tipo + "_valorNuevo").value;
+		$.ajax({
+			url: 'Recursos/php/obtenerHistorico.php',
+			data: {
+				nombre: tipoActual, funcion: "editarValor", parcela: parcelaElegida, valor: valor, fecha: document.getElementById(tipo).innerHTML},
+			dataType: 'text',
+			async: false
+		});
+
+    }
+}
+
+function nuevoDato() {
+	document.getElementById("nuevoDato").innerHTML = '<td id="insercion"><input type="date" id="insercion_fecha"></td><td id="insercion_2"><input type="number" id="insercion_valor"></td><td><button id="boton_nuevo" onclick=guardarDatos()>Guardar</button></td>';
+	document.getElementById("boton_adicion").disabled = true;
+}
+
+function guardarDatos() {
+	if (document.getElementById("insercion_fecha").value != "" && document.getElementById("insercion_valor").value != "") {
+
+		aprobado = $.ajax({
+			url: 'Recursos/php/obtenerHistorico.php',
+			data: {
+				nombre: tipoActual, funcion: "fecha", parcela: parcelaElegida,
+				fecha: document.getElementById("insercion_fecha").value
+			},
+			dataType: 'text',
+			async: false
+		}).responseText;
+
+		if (aprobado) {
+			var date = new Date(document.getElementById("insercion_fecha").value);
+			if (date.getDay() != 0) {
+				document.getElementById("domingo").style.display = "flex";
+			} else {
+				$.ajax({
+					url: 'Recursos/php/obtenerHistorico.php',
+					data: {
+						nombre: tipoActual, funcion: "insertarDato", parcela: parcelaElegida,
+						fecha: document.getElementById("insercion_fecha").value, valor: document.getElementById("insercion_valor").value
+					},
+					dataType: 'text',
+					async: false
+				});
+				document.getElementById("nuevoDato").innerHTML = "";
+				document.getElementById("boton_adicion").disabled = false;
+				muestraHistoricoBoton(tipoActual);
+			}
+		} else {
+			document.getElementById("presente").style.display = "flex";
+        }
+	} else {
+		document.getElementById("insercion").style.display = "flex";
+    }
+}
+
+function muestraHistorico(parcela) {
+
+	valores = $.ajax({
+		url: 'Recursos/php/obtenerHistorico.php',
+		data: { funcion: "obtenerAspectos", parcela: parcela },
+		dataType: 'text',
+		async: false
+	}).responseText;
+	if (valores == "")
+		aspecto = "temperatura";
+	else
+		aspecto = valores.split("-")[0];
+	document.getElementById("radio-" + aspecto).checked = true;
+	parcelaElegida = parcela;
+	tipoActual = aspecto;
+	tabla = $.ajax({
+		url: 'Recursos/php/obtenerHistorico.php',
+		data: { nombre: aspecto, funcion: "obtenerTabla", parcela: parcela, nivel: 1, tipo: "inicial" },
+		dataType: 'text',
+		async: false
+	}).responseText;
+	document.getElementById("tablaHistorica").innerHTML = tabla.split("&")[0];
+	document.getElementById("historico").showModal();
+	elementos = tabla.split("&")[1];
+	if (parseInt(elementos, 10) < 10) {
+		document.getElementById("post").className = "page-item disabled";
+	}
+	ejeY = "";
+	switch (aspecto) {
+		case 'temperatura':
+			ejeY = "Grados";
+			break;
+		case 'humedad':
+			ejeY = "%";
+			break;
+		case 'produccion':
+			ejeY = "Kg";
+			break;
+		case 'precipitaciones':
+			ejeY = "L/ha";
+			break;
+	}
+	calculoGrafica(aspecto, ejeY, 0, elementos);
+}
+
+function muestraHistoricoBoton(boton) {
+	tipoActual = boton.toLowerCase();
+
+	tabla = $.ajax({
+		url: 'Recursos/php/obtenerHistorico.php',
+		data: { nombre: tipoActual, funcion: "obtenerTabla", parcela: parcelaElegida, nivel: 1, tipo: "inicial" },
+		dataType: 'text',
+		async: false
+	}).responseText;
+
+	ejeY = "";
+	switch (boton) {
+		case 'temperatura':
+			ejeY = "Grados";
+			break;
+		case 'humedad':
+			ejeY = "%";
+			break;
+		case 'produccion':
+			ejeY = "Kg";
+			break;
+		case 'precipitaciones':
+			ejeY = "L/ha";
+			break;
+	}
+	document.getElementById("tablaHistorica").innerHTML = tabla.split("&")[0];
+
+	elementos = tabla.split("&")[1];
+	if (parseInt(elementos, 10) < 10) {
+		document.getElementById("post-historico").className = "page-item disabled";
+	}
+	calculoGrafica(boton, ejeY, 0, elementos);
+}
+
+
+function siguientesDatos(numero, total) {
+
+	datos = $.ajax({
+		url: 'Recursos/php/obtenerHistorico.php',
+		data: { nombre: tipoActual, funcion: "obtenerTabla", nivel: numero, tipo: "siguiente", parcela: parcelaElegida },
+		dataType: 'text',
+		async: false
+	}).responseText;
+
+	document.getElementById("tablaHistorica").innerHTML = datos.split("&")[0];
+	document.getElementById("disabled-historico").className = "page-item";
+
+	if (numero > total - 10) {
+		document.getElementById("post-historico").className = "page-item disabled";
+	} else {
+		document.getElementById("disabled-historico").className = "page-item ";
+	}
+
+	ejeY = "";
+	switch (tipoActual) {
+		case 'temperatura':
+			ejeY = "Grados";
+			break;
+		case 'humedad':
+			ejeY = "%";
+			break;
+		case 'produccion':
+			ejeY = "Kg";
+			break;
+		case 'precipitaciones':
+			ejeY = "L/ha";
+			break;
+	}
+
+	calculoGrafica(tipoActual, ejeY, numero, total);
+}
+
+
+function anterioresDatos(numero) {
+	datos = $.ajax({
+		url: 'Recursos/php/obtenerHistorico.php',
+		data: { nombre: tipoActual, funcion: "obtenerTabla", nivel: numero, tipo: "anterior", parcela: parcelaElegida },
+		dataType: 'text',
+		async: false
+	}).responseText;
+
+	document.getElementById("tablaHistorica").innerHTML = datos.split("&")[0];
+
+	document.getElementById("post-historico").className = "page-item";
+
+	if ((numero - 1) > 10) {
+		document.getElementById("disabled-historico").className = "page-item";
+	} else {
+		document.getElementById("disabled-historico").className = "page-item disabled";
+	}
+
+	ejeY = "";
+	switch (tipoActual) {
+		case 'temperatura':
+			ejeY = "Grados";
+			break;
+		case 'humedad':
+			ejeY = "%";
+			break;
+		case 'produccion':
+			ejeY = "Kg";
+			break;
+		case 'precipitaciones':
+			ejeY = "L/ha";
+			break;
+	}
+
+	calculoGrafica(tipoActual, ejeY, numero - 10, datos.split("&")[1]);
+}

@@ -7,11 +7,29 @@ var tipoCamara = "perspectiva";
 var tipoModelo = "nube";
 var polygon;
 var nubeExists;
+var system;
+var parameters;
+var deteccion;
+var f_b;
+var detectado = false;
 
+
+var gui;
+
+const smallDevice = window.matchMedia("(min-width: 576px)");
+
+smallDevice.addListener(handleDeviceChange);
+
+function handleDeviceChange(e) {
+	if (e.matches) gui.open();
+	else gui.close();
+}
 
 
 function controlEscena(camera, cameraCenital, scene, _parcela, nube) {
-
+	gui = new dat.GUI({ name: 'GUI', width: 250 });
+	handleDeviceChange(smallDevice);
+	crearGUI();
 	camara = camera;
 	camaraCenital = cameraCenital;
 	escena = scene;
@@ -21,49 +39,57 @@ function controlEscena(camera, cameraCenital, scene, _parcela, nube) {
 		system["formato"] = "text";
 		cambioModelo();
 	}
+
 }
 
-var gui = new dat.GUI({name: 'GUI', width: 250 });
 
-const smallDevice = window.matchMedia("(min-width: 576px)");
 
-smallDevice.addListener(handleDeviceChange);
+function crearGUI() {
 
-function handleDeviceChange(e) {
-  if (e.matches) gui.open();
-  else gui.close();
+	system = {
+		Zoom: 175,
+		rotationX: Math.PI / 4,
+		rotationY: 0,
+		moverX: 0,
+		moverY: 0,
+		seleccion: false,
+		formato: "nube",
+	};
+
+
+	f_b = gui.addFolder('Base');
+	f_b.open();
+	f_b.add(system, 'seleccion', false).name("Recorte").listen().onChange(function () { seleccion() });
+	f_b.add(system, "formato", { Nube: "nube", Textura: "text", Combinación: "combi" }).name("Formato 3D").listen().onChange(function () { cambioModelo() });
+	f_b.add(system, 'Zoom', 0, 400).name("Zoom").listen().onChange(function () { aplicarZoom() });
+	f_b.add(system, 'rotationX', 0, Math.PI / 2.2).name("Rotación X").listen().onChange(function () { rotar("x") });
+	f_b.add(system, 'rotationY', 0, 2 * Math.PI).name("Rotación Y").listen().onChange(function () { rotar("y") });
+
+
+	parameters = {
+		Tipo: "perspectiva",
+	}
+
+	var first = gui.addFolder("Camara");
+	first.add(parameters, "Tipo", { Cenital: "cenital", Perspectiva: "perspectiva", Rotatoria: "rotar" }).name("Tipo Visión").listen().onChange(function () { setChecked() });
+	first.open();
+
+	deteccion = gui.addFolder('Detección Objetos');
+	let deteccionObjetos = { Detecc: function () { detectar() } };
+	deteccion.add(deteccionObjetos, 'Detecc').name("Detectar Olivos");
+
+
+	let centrarVista = { Centrar: function () { centrado() } };
+	gui.add(centrarVista, 'Centrar').name("Centrar visión");
+
+
+
+	let volverInformacion = { Volver: function () { volverPagInformacion() } };
+	gui.add(volverInformacion, 'Volver').name("Volver Información");
+
+	setInterval(ajuste, 100);
 }
 
-// Run it initially
-handleDeviceChange(smallDevice);
-
-var system = {
-	Zoom: 175,
-	rotationX: Math.PI / 4,
-	rotationY: 0,
-	moverX: 0,
-	moverY: 0,
-	seleccion: false,
-	formato: "nube",
-};
-
-
-var f_b = gui.addFolder('Base');
-f_b.open();
-f_b.add(system, 'seleccion', false).name("Selección").listen().onChange(function(){ seleccion()});
-f_b.add(system, "formato", {Nube: "nube", Textura: "text", Combinación: "combi"}).name("Formato 3D").listen().onChange(function(){ cambioModelo()});
-f_b.add(system, 'Zoom', 0,400).name("Zoom").listen().onChange(function(){ aplicarZoom()});
-f_b.add(system, 'rotationX', 0,Math.PI / 2.2).name("Rotación X").listen().onChange(function(){ rotar("x")});
-f_b.add(system, 'rotationY', 0,2 * Math.PI).name("Rotación Y").listen().onChange(function(){ rotar("y")});
-
-
-var parameters = {
-	Tipo: "perspectiva",
-}
-
-var first = gui.addFolder("Camara");
-first.add(parameters, "Tipo", {Cenital: "cenital", Perspectiva: "perspectiva", Rotatoria: "rotar"}).name("Tipo Visión").listen().onChange(function(){ setChecked()});
-first.open();
 
 function setChecked(){
 	if(parameters["Tipo"] == "perspectiva" || parameters["Tipo"] == "rotar"){
@@ -98,21 +124,7 @@ function setChecked(){
 	centrado();
 }
 
-var deteccion = gui.addFolder('Detección Objetos');
-let deteccionObjetos = {Detecc: function(){ detectar() }};
-deteccion.add(deteccionObjetos,'Detecc').name("Detectar Olivos");
-	
-	
-let centrarVista = {Centrar: function(){ centrado() }};
-gui.add(centrarVista,'Centrar').name("Centrar visión");
-	
-	
-let irInformacion = {Información: function(){ irPagInformacion() }};
-gui.add(irInformacion,'Información').name("Ir Información");
-	
-	
-let volverInformacion = {Volver: function(){ volverPagInformacion() }};
-gui.add(volverInformacion,'Volver').name("Volver Información");
+
 
 
 
@@ -169,12 +181,10 @@ function volverPagInformacion(){
 	location.href = "InformacionParcela.php?modelo=" + nombre_modelo;
 }
 
-function irPagInformacion(){
-	location.href = "InformacionSeleccion.php?modelo=" + nombre_modelo;
-}
 
 function seleccion(){
-	if(tipoCamara != "cenital"){
+	if (tipoCamara != "cenital") {
+		document.getElementById("seleccion").style.display = "flex";
 		system["seleccion"] = false;
 		seleccionActivo = system["seleccion"];
 	}else{
@@ -221,8 +231,27 @@ function eliminarRecorte(){
 	
 }
 
-function recorte(){
-	
+function crearReestructuracion() {
+
+	let reestructurar = { reestructurar: function () { recomponerNube() } };
+	gui.add(reestructurar, 'reestructurar').name("Recomponer nube");
+
+}
+
+function eliminarReestructuracion() {
+
+	gui.remove(gui.__controllers[2]);
+
+}
+
+function recomponerNube() {
+	document.getElementById("mensaje").style.display = "block";
+	pcs.dispose();
+	eliminarReestructuracion();
+	reconstruirParcela(false);
+}
+
+function recorte() {
 	if(finSeleccion){
 		for (var i = 0; i < coordenadas.length - 1; i++){
 			//Se multiplica por Y para bajar las coordenadas a la altura de la nube, pues la camara se encuentra a altura Y.
@@ -235,7 +264,10 @@ function recorte(){
 		}
 		eliminarRecorte();
 		pcs.dispose();
-		recorteParcela(scene);
+		system["seleccion"] = false;
+		//recorteParcela(scene);
+		recorteParcelaVoxelizado(scene, coordenadas);
+		crearReestructuracion();
 	}else{
 		alert("La selección no esta completa");
 	}
@@ -264,12 +296,13 @@ function cambioModelo() {
 		tipoModelo = "text";
 	} else {
 		if (system["formato"] == "nube") {
+			document.getElementById("mensaje").style.display = "block";
 			polygon.dispose();
 			for (var i = 0; i < olivos_deteccion.length; i++) {
 				olivos_deteccion[i][0].dispose();
 			}
 			if (tipoModelo != "combi") {
-				reconstruirParcela();
+				reconstruirParcela(recortada);
 			}
 			tipoModelo = "nube";
 		} else if (system["formato"] == "text") {
@@ -286,60 +319,78 @@ function cambioModelo() {
 			if (tipoModelo == "nube") {
 				creacionPoligono(parcela, detectado);
 			} else {
-				reconstruirParcela();
+				document.getElementById("mensaje").style.display = "block";
+				reconstruirParcela(recortada);
 			}
 			tipoModelo = "combi";
 		}
 	}
 }
 
-function detectar(){
-	//ejecucion();
+function detectar() {
+	if (!detectado) {
+		if (system["formato"] == "text" || system["formato"] == "combi") {
 
-	var valores = $.ajax({
-		url: 'Recursos/Scripts/Deteccion_Olivos/Debug/deteccion.php',
-		data: { parcela: parcela },
-		dataType: 'text',
-		async: false
-	}).responseText;
-	limites = valores.split("/");
-	detectado = true;
-	if (system["formato"] == "text") {
-		polygon.dispose();
-		creacionPoligono(parcela, detectado);
-	}
-	aux = limites[3].split("-");
-	olivos = []
-	for (var i = 0; i < aux.length - 1; i++) {
-		olivos.push(new BABYLON.Vector2(parseFloat(aux[i].split(",")[0].split("[")[1]), parseFloat(aux[i].split(",")[1].split("]")[0])));
-	}
+			var valores = $.ajax({
+				url: 'Recursos/Scripts/Deteccion_Olivos/Debug/deteccion.php',
+				data: { parcela: parcela },
+				dataType: 'text',
+				async: false
+			}).responseText;
+			limites = valores.split("/");
+			detectado = true;
 
-	posicionamiento(olivos, limites[1], limites[2]);
+			//Mostrar la textura con el resultado de la detección
+			//polygon.dispose();
+			//creacionPoligono(parcela, detectado);
 
-	var hl = new BABYLON.HighlightLayer("hl1", scene);
-	//Ultimo olivo seleccionado
-	var ultimaSeleccion = 0;
-	escena.onPointerDown = (evt) => {
-		if (evt.button == 2 && vision_pov) {
-			//Convierte el raton en un joystick de manera que al moverlo se mueve la camara en primera persona
-			engine.enterPointerlock();
-		}
-		if (evt.button == 1) {
-			engine.exitPointerlock();
-		}
-		const ray = scene.createPickingRay(scene.pointerX, scene.pointerY);
-		const raycastHit = scene.pickWithRay(ray);
-		if (raycastHit.pickedMesh && raycastHit.pickedMesh.metadata == "olivo") {
-			hl.removeAllMeshes();
-			hl.addMesh(raycastHit.pickedMesh, BABYLON.Color3.Green());
-			ultimaSeleccion = raycastHit.pickedMesh.id;
-		}
-		//Si se clica fuera de un olivo se deselecciona todo
-		else {
-			hl.removeAllMeshes();
-			ultimaSeleccion = 0;
+			aux = limites[3].split("-");
+			olivos = []
+			for (var i = 0; i < aux.length - 1; i++) {
+				olivos.push(new BABYLON.Vector2(parseFloat(aux[i].split(",")[0].split("[")[1]), parseFloat(aux[i].split(",")[1].split("]")[0])));
+			}
+
+			posicionamiento(olivos, limites[1], limites[2]);
+
+			if (nubeExists) {
+				let integrarNube = { Detecc: function () { integrar() } };
+				deteccion.add(integrarNube, 'Integracion').name("Identificar Olivos nube");
+			}
+
+			//var hl = new BABYLON.HighlightLayer("hl1", scene);
+			////Ultimo olivo seleccionado
+			//var ultimaSeleccion = 0;
+			//escena.onPointerDown = (evt) => {
+			//	if (evt.button == 2 && vision_pov) {
+			//		//Convierte el raton en un joystick de manera que al moverlo se mueve la camara en primera persona
+			//		engine.enterPointerlock();
+			//	}
+			//	if (evt.button == 1) {
+			//		engine.exitPointerlock();
+			//	}
+			//	const ray = scene.createPickingRay(scene.pointerX, scene.pointerY);
+			//	const raycastHit = scene.pickWithRay(ray);
+			//	if (raycastHit.pickedMesh && raycastHit.pickedMesh.metadata == "olivo") {
+			//		hl.removeAllMeshes();
+			//		hl.addMesh(raycastHit.pickedMesh, BABYLON.Color3.Green());
+			//		ultimaSeleccion = raycastHit.pickedMesh.id;
+			//	}
+			//	//Si se clica fuera de un olivo se deselecciona todo
+			//	else {
+			//		hl.removeAllMeshes();
+			//		ultimaSeleccion = 0;
+			//	}
+			//}
+		} else {
+			document.getElementById('deteccion').style.display = 'flex';
 		}
 	}
+}
+
+function integrar() {
+	deteccion.remove(deteccion.__controllers[deteccion.__controllers.length - 1]);
+
+	analisisNube();
 }
 
 function ajuste() {
@@ -354,5 +405,3 @@ function ajuste() {
 	}
 
 }
-
-setInterval(ajuste, 100);

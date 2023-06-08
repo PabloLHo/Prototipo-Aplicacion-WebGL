@@ -10,11 +10,11 @@ $_SESSION['tiempo'] = time();
 $_SESSION['usuario']= $usuario;
 $_SESSION['contraseña'] = $psswd;
 
-$resConsulta=$conexion->query("SELECT contraseña FROM usuario where usuario='$usuario'");
+$resConsulta=$conexion->query("SELECT password FROM usuario where usuario='$usuario'");
 $datosConsulta = $resConsulta->fetch_array(MYSQLI_BOTH);
 
 
-if(password_verify($psswd, $datosConsulta['contraseña'])){ 
+if(password_verify($psswd, $datosConsulta['password'])){ 
 
     header("location:../../Home.php");
 

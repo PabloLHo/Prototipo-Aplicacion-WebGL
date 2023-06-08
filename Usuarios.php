@@ -5,13 +5,9 @@ session_start();
 
 $clave = $_SESSION['usuario'];
 
-if( $clave == null ){
+if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 	header("location:index.php");
 };
-
-if(time() - $_SESSION['tiempo'] > 43200){
-	header("location:index.php");
-}
 ?>
 
 <html>
@@ -19,7 +15,8 @@ if(time() - $_SESSION['tiempo'] > 43200){
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Profile - Brand</title>
+	<link rel="icon" type="image/x-icon" href="Recursos/imagenes/logo.png">
+    <title>Profile</title>
     <link rel="stylesheet" href="Recursos/css/bootstrap.min.css">
      <link rel="stylesheet" href="Recursos/css/userCard.css">
     <link rel="stylesheet" href="Recursos/css/botones.css">
@@ -144,14 +141,15 @@ if(time() - $_SESSION['tiempo'] > 43200){
 
 			<dialog id="edicion-card-usuarios" style="width: 50%">
                 <div class="modal-header">
-				    <a class="button cross" onclick="document.getElementById('edicion-card-usuarios').close()"></a>
+				    <a class="button cross" onclick="document.getElementById('edicion-card-usuarios').close(); document.getElementById('mensajeContrasena').style.display = 'none'; document.getElementById('mensajeUsuario').style.display = 'none';"></a>
 					<h4 class="modal-title" style="width: auto">Usuario</h4>
 				</div>
             	<div class="user">
                     <div class="user-info">
 			            <span class="user-title" >Usuario*</span>
-                        <span class="user-info" id="edit_usuario_card"><input class="form-control" type="text" id="user_user" name="username"></span>
-		            </div>
+						<span class="user-info" id="edit_usuario_card"><input class="form-control" type="text" id="user_user" name="username"></span>
+						<span class="user-info" id="mensajeUsuario" style="display:none; color: #ff0000">Este nombre de usuario no esta disponible</span>
+					</div>
                     <div class="user-info" >
 			            <span class="user-title">Nombre*</span>
                         <span class="user-info" id="edit_nombre_card" ><input class="form-control" type="text" id="name_user" name="username"></span>

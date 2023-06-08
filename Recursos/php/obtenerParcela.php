@@ -195,11 +195,11 @@ function datosResumen($conexion, $parcela){
 function coordenadasZona($conexion, $parcela){
 	$zona = $_REQUEST['zona'];
 	if($zona != ""){
-		$resConsulta_2=$conexion->query("SELECT * FROM geometria_parcela where id_recinto = '$parcela'");
+		$resConsulta_2=$conexion->query("SELECT * FROM geometria_parcela where id_Parcela = '$parcela'");
 		$filaConsulta_2 = $resConsulta_2->fetch_array(MYSQLI_BOTH);
 		$resConsulta=$conexion->query("SELECT AsText(SHAPE) FROM geometria_parcela where cd_pol =".$filaConsulta_2['cd_pol']." AND cd_parcela = ".$filaConsulta_2['cd_parcela']." AND cd_recinto=".$zona."");
 	}else{
-		$resConsulta=$conexion->query("SELECT AsText(SHAPE) FROM geometria_parcela where id_recinto = '$parcela'");
+		$resConsulta=$conexion->query("SELECT AsText(SHAPE) FROM geometria_parcela where id_Parcela = '$parcela'");
 	}
 	
 	///TABLA DONDE SE DESPLIEGAN LOS REGISTROS //////////////////////////////
