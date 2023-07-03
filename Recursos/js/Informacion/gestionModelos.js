@@ -135,12 +135,6 @@ function mostrarParcela(parcela) {
 		};
 	}else
 		document.getElementById("orto").style.display = "none";
-	if (parseInt(datos[6])) {
-		document.getElementById("altura").onclick = function DownloadFromUrl() {
-			var link = document.createElement('a'); link.href = "Recursos/mapasAltura/" + datos[1] + "_A_" + + parcela + ".png"; link.download = datos[1] + "_A_" + parcela; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-		};
-	}else
-		document.getElementById("altura").style.display = "none";
 
 	if (datos[2] == "") {
 		document.getElementById("fecha_vuelo").placeholder = "N/A";
@@ -183,15 +177,6 @@ function guardarParcela() {
 		$.ajax({
 			url: 'Recursos/php/gestionModelos.php',
 			data: { funcion: "actualizarOrto", parcela: parcela },
-			dataType: 'text',
-			async: false
-		});
-
-	}
-	if (document.getElementById("aux3").value != "") {
-		$.ajax({
-			url: 'Recursos/php/gestionModelos.php',
-			data: { funcion: "actualizarAltura", parcela: parcela },
 			dataType: 'text',
 			async: false
 		});
@@ -257,34 +242,6 @@ function ajustarOrto2() {
 	
 }
 
-function ajustarAltura() {
-	nombre = document.getElementById("aux3").value.split(".")[document.getElementById("aux3").value.split(".").length - 1];
-	nombre = nombre.toLowerCase();
-	if (nombre != "jpg") {
-		alert("Formato invalido, debe ser JPG");
-		document.getElementById("aux3").value = "";
-	} else {
-		parcela = document.getElementById("municipio_card").innerHTML.split("/")[1];
-		parcela = parcela.substring(1, parcela.length);
-		document.getElementById("comboTriple").action = "Recursos/php/subirModelos.php?w1=" + parcela;
-	}
-	
-}
-
-function ajustarAltura2() {
-	nombre = document.getElementById("aux6").value.split(".")[document.getElementById("aux6").value.split(".").length - 1];
-	nombre = nombre.toLowerCase();
-	if (nombre != "jpg") {
-		alert("Formato invalido, debe ser JPG");
-		document.getElementById("aux6").value = "";
-	} else {
-		parcela = document.getElementById("municipio_card").innerHTML.split("/")[1];
-		parcela = parcela.substring(1, parcela.length);
-		document.getElementById("comboTriple").action = "Recursos/php/subirModelos.php?w1=" + parcela;
-	}
-	
-}
-
 
 function anadirModelo() {
 
@@ -297,24 +254,15 @@ function anadirModelo() {
 		switch (selectedOption) {
 			case "NubePuntos":
 				document.getElementById("form_ortofoto").style.display = "none";
-				document.getElementById("form_altura").style.display = "none";
 				document.getElementById("form_nube").style.display = "flex";
 				document.getElementById("form_fecha_vuelo").style.display = "flex";
 				break;
-			case "Combo":
-				document.getElementById("form_altura").style.display = "flex";
-				document.getElementById("form_fecha_vuelo").style.display = "none";
-				document.getElementById("form_nube").style.display = "none";
-				document.getElementById("form_ortofoto").style.display = "flex";
-				break;
 			case "Ortofoto":
-				document.getElementById("form_altura").style.display = "none";
 				document.getElementById("form_fecha_vuelo").style.display = "none";
 				document.getElementById("form_nube").style.display = "none";
 				document.getElementById("form_ortofoto").style.display = "flex";
 				break;
 			case "Triple":
-				document.getElementById("form_altura").style.display = "flex";
 				document.getElementById("form_ortofoto").style.display = "flex";
 				document.getElementById("form_nube").style.display = "flex";
 				document.getElementById("form_fecha_vuelo").style.display = "flex";
@@ -356,15 +304,6 @@ function incluirModelos() {
 			});
 
 		}
-		if (document.getElementById("aux6").value != "") {
-			$.ajax({
-				url: 'Recursos/php/gestionModelos.php',
-				data: { funcion: "actualizarAltura", parcela: parcela },
-				dataType: 'text',
-				async: false
-			});
-
-		}
 
 		document.getElementById("comboTriple").submit();
 	}
@@ -385,7 +324,7 @@ function calculoGrafica(nombre, ejeY, actual, total) {
 	var aux = nombre.toLowerCase();
 	$.ajax({
 		url: 'Recursos/php/obtenerHistorico.php',
-		data: { funcion: 'Datos', aspecto: aux, parcela: parcelaElegida, numero: actual, final: final },
+		data: { funcion: 'DatosRango', aspecto: aux, parcela: parcelaElegida, numero: actual, final: final },
 		dataType: 'json',
 		success: function (response) {
 			fechas = response["Fechas"];

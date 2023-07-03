@@ -104,8 +104,8 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 
             <dialog id="card-usuarios" style="width: 50%">
                 <div class="modal-header">
-				    <a class="button cross" onclick="document.getElementById('card-usuarios').close()"></a>
 					<h4 class="modal-title" style="width: auto">Usuario</h4>
+					<a class="button cross" onclick="document.getElementById('card-usuarios').close()"></a>
 				</div>
             	<div class="user">
 		            <div class="user-header" id="cabecera">
@@ -141,8 +141,9 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 
 			<dialog id="edicion-card-usuarios" style="width: 50%">
                 <div class="modal-header">
-				    <a class="button cross" onclick="document.getElementById('edicion-card-usuarios').close(); document.getElementById('mensajeContrasena').style.display = 'none'; document.getElementById('mensajeUsuario').style.display = 'none';"></a>
-					<h4 class="modal-title" style="width: auto">Usuario</h4>
+				    <h4 class="modal-title" style="width: auto">Usuario</h4>
+					<a class="button cross" onclick="document.getElementById('edicion-card-usuarios').close(); document.getElementById('mensajeContrasena').style.display = 'none'; document.getElementById('mensajeUsuario').style.display = 'none';"></a>
+					
 				</div>
             	<div class="user">
                     <div class="user-info">

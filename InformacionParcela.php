@@ -20,6 +20,8 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" type="text/css" href="Recursos/css/dashboard.css" media="all">
 		<link rel="stylesheet" href="Recursos/fonts/fontawesome-all.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="Recursos/fonts/fontawesome-all.min.css">
 		
 		<!-- CSS Propio -->
 		<link rel="stylesheet" href="Recursos/css/styleTabla.css">
@@ -66,12 +68,12 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" id="link_zonas"  href="#" onclick="muestraZonas()">
-								<i class="fas fa-user"></i><span>División Zonas</span>
+								<i class="fas fa-regular fa-layer-group"></i><span>División Zonas</span>
 							</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" id="link_historico" href="#" onclick="muestraHistorico()">
-								<i class="fas fa-user"></i><span>Historico Datos</span>
+								<i class="fa fa-area-chart"></i></i><span>Historico Datos</span>
 							</a>
 						</li>
 					</ul>
@@ -131,18 +133,13 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 									</div>
 									<hr class="featurette-divider">
 									<div class="row align-items-center justify-content-center" id="fotoFecha">
-										<div class="col-8">
+										<div>
 											<table style="margin: auto; width: 100%">
 												<tr style="text-align: center">
 													<td style="background-color: #3b83bd;border:1px solid #000; color: #ffffff">Fecha de vuelo:</td>
 													<td style="border:1px solid #000;" id="fecha_vuelo"></td>
 												</tr>
 											</table>
-										</div>
-										<div class="col" id="contenedor_imagen_altitud" style="text-align: center">
-											<h5>Esquema de altitud </h5>
-											<h5 id="prueba"> </h5>
-											<img id="imagen_altura" src= "/" alt="Esquema de altura de la parcela" height="auto" width="100%" style="border: 3px solid; color: grey;">
 										</div>
 									</div>
 								</div>					
@@ -167,10 +164,6 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 							<div class="row align-items-center justify-content-center" style="width:100%">
 								<div class="d-sm-flex justify-content-between align-items-center mb-4">
 									<h3 class="text-dark mb-0">Información Zonal</h3>
-								</div>
-								<div class="row justify-content-center">
-									<img id="ortoParcela" src="Recursos/imagenes/ortofoto_1.png">
-									<h5> &nbsp </h5>
 								</div>
 								<div>
 									<div id="tablaEspecifica">
@@ -241,7 +234,7 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 						<section class="container-fluid" id="Historico" style="display:none">
 							<div class="row align-items-center justify-content-center">
 								<dialog id="Grafica" style="width: 75%; margin-left: 20%; margin-bottom: 10%">
-									<a class="button cross" onclick="document.getElementById('Grafica').close()"></a>
+									<a class="button cross" style="align:right" onclick="document.getElementById('Grafica').close();"></a>
 									<!--<button onclick="document.getElementById('Grafica').close()">Cerrar</button> -->
 									<div class="card-body" id="despliegueGrafica">
 										<canvas id="SobrePuesta" ></canvas>

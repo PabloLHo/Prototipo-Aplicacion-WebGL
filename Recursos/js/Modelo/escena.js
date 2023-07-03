@@ -3,9 +3,8 @@
 /*Variable que nos permite activar la seleccion por primera vez */
 var activacion = true;
 var recortada = false;
-
+var poligonoCreado = false;
 var seleccionActivo = false;
-
 
 //Seleccion
 var lineasSeleccion = null;
@@ -16,6 +15,7 @@ var coordenadas = [];
 //Vectores coordenadas nube
 var pcs;
 var nube = [];
+var nubeExists = false;
 var voxelizacion = [];
 var boundingBoxes = [];
 var voxelesAnalizar = [];
@@ -37,18 +37,25 @@ var medR = new BABYLON.Vector3(0, 0, 0);
 //Coordenadas de posición de la textura
 var coordenadas_textura = [];
 var olivos_deteccion = [];
+var posicionesY = [];
 var maxT = new BABYLON.Vector2(Number.MIN_VALUE, Number.MIN_VALUE);
 var minT = new BABYLON.Vector2(Number.MAX_VALUE, Number.MAX_VALUE);
-var medT = new BABYLON.Vector2(0,0);
+var medT = new BABYLON.Vector2(0, 0);
+var polygon;
 
 
 
-/*Función que modela una escena preparada para albergar una nube de puntos*/
+/*
+ * Función que modela una escena preparada para albergar una nube de puntos
+ * 
+ * nombre: Variable string que almacena el identificador de la parcela a renderizar
+ * 
+ */
 function Parcela(nombre) {
 
 	const scene = new BABYLON.Scene(engine);
 	var camera = new BABYLON.ArcRotateCamera("Camera", 0, Math.PI / 4, 175, new BABYLON.Vector3(0,1,0), scene);
-	//camera.upperBetaLimit = Math.PI / 2.2;
+	camera.upperBetaLimit = Math.PI / 2.2;
 	camera.attachControl(canvas, true);
 	scene.activeCamera = camera;
 	
@@ -73,33 +80,35 @@ function Parcela(nombre) {
 	
 	const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
 	light.intensity = 1;
-	var nube = false;
 
 	obtenerTextura(nombre);
 
 	fetch('Recursos/Modelos/Marmolejo_' + nombre + '.txt')
 		.then(response => {
 			if (response.ok) {
-				nube = true;
-				creacionParcela(scene, nombre,camera, cameraCenital, nube);
+				nubeExists = true;
+				creacionParcela(scene, nombre, camera, cameraCenital, nubeExists);
 			} else {
-				nube = false;
+				nubeExists = false;
 				document.getElementById("mensaje").style.display = "none";
-				controlEscena(camera, cameraCenital, scene, nombre, nube);
+				controlEscena(camera, cameraCenital, scene, nombre, nubeExists);
 			}
 			
 	});
 
-	//const largeGround = BABYLON.MeshBuilder.CreateGroundFromHeightMap("largeGround", "Recursos/mapasAltura/prueba.png", { width: maxXT - minXT, height: maxYT - minYT, subdivisions: 20, minHeight: 0, maxHeight: 5 });
-	//var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
-	//groundMaterial.diffuseTexture = new BABYLON.Texture("Recursos/ortofotos/Marmolejo_O_" + nombre + ".png", scene);
-	//largeGround.material = groundMaterial;
-
-
 	return scene;
 }
 
-/*Función que lee el fichero txt con los puntos y genera un sistema de nube de puntos con los datos de los mismos y lo descarga como glb*/
+
+/*
+ * Función que lee el fichero txt con los puntos y genera un sistema de nube de puntos con los datos de los mismos y lo descarga como glb
+ *
+ * parcela: Variable String identificador de la parcela a renderizar
+ * camera: Variable de Babylon que almacena la camara del sistema
+ * cameraCenital: Variable del sistema que almacena la camara cpm visión cenital del sistema
+ * nubeBool: Booleano que indica que la nube existe en el sistema
+ *
+ */
 async function creacionParcela(scene, parcela, camera, cameraCenital, nubeBool){
 
 	await fetch("Recursos/Modelos/Marmolejo_" + parcela + ".txt")
@@ -113,32 +122,36 @@ async function creacionParcela(scene, parcela, camera, cameraCenital, nubeBool){
 					datos.push(parseFloat(campos[x]));
 				}
 				nube.push(datos);
-				comparar(campos);
+				comparar(datos, max, min);
 			}
 
 		});
 	if (nube.length > 0) {
+		var factorZ = (maxT.y - minT.y) / (max.z - min.z);
+		min.z *= factorZ;
+		max.z *= factorZ;
+		min.x *= factorZ;
+		max.x *= factorZ;
 
-		med.x = (max.x + min.x) / 2, med.y = (max.y + min.y) / 2, med.z = (max.z + min.z) / 2;
+		med.x = (max.x + min.x) / 2, med.z = (max.z + min.z) / 2;
 
 		min.x -= med.x, max.x -= med.x;
-		min.y -= med.y, max.y -= med.y;
 		min.z -= med.z, max.z -= med.z;
-
-
-		voxelizar(max, min, med);
-
+		auxY = min.y;
+		min.y = 0, max.y -= auxY;
+		voxelizar(max, min);
 		var myfunc = function (particle, i) {
+			nube[i][2] *= factorZ;
+			nube[i][0] *= factorZ;
 			nube[i][0] -= med.x;
-			nube[i][1] -= med.y;
+			nube[i][1] -= auxY;
 			nube[i][2] = - (nube[i][2] - med.z);
 			particle.position = new BABYLON.Vector3(nube[i][0], nube[i][1], nube[i][2]);
 			particle.color = new BABYLON.Color4(nube[i][3], nube[i][4], nube[i][5], nube[i][6]);
-			var y = parseInt((nube[i][0] - min.x) / tamVoxel);
-			var x = parseInt((nube[i][1] - min.y) / tamVoxel);
+			var x = parseInt((nube[i][0] - min.x) / tamVoxel);
+			var y = parseInt((nube[i][1] - min.y) / tamVoxel);
 			var z = parseInt((nube[i][2] - min.z) / tamVoxel);
-
-			voxelizacion[y][x][z].push(i);
+			voxelizacion[x][y][z].push(i);
 		};
 
 		pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
@@ -153,39 +166,46 @@ async function creacionParcela(scene, parcela, camera, cameraCenital, nubeBool){
 }
 
 
+/*
+ * Función que permite reconstruir la nube de puntos al completo
+ * 
+ * origen: Booleano que indica si la reconstrucción consiste en volver a poner la nube entera sin recorte o solo mostrar la nube de nuevo
+ * 
+ */
 function reconstruirParcela(origen) {
 	if (!origen) {
-		pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
+		vector = nube;
 		recortada = false;
 		voxelizar(max, min);
-		var myfunc = function (particle, i) {
-			particle.position = new BABYLON.Vector3(nube[i][0], nube[i][1], nube[i][2]);
-			particle.color = new BABYLON.Color4(nube[i][3], nube[i][4], nube[i][5], nube[i][6]);
-			var y = parseInt((nube[i][0] - min.x) / tamVoxel);
-			var x = parseInt((nube[i][1] - min.y) / tamVoxel);
-			var z = parseInt((nube[i][2] - min.z) / tamVoxel);
-			voxelizacion[y][x][z].push(i);
-		};
-		for (let i = 2; i < nube.length; i++) {
-			pcs.addPoints(1, myfunc);
-		}
-		pcs.buildMeshAsync();
-		document.getElementById("mensaje").style.display = "none";
-	} else {
-		pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
-		var myfunc = function (particle, i) {
-			particle.position = new BABYLON.Vector3(nubeRecortada[i][0], nubeRecortada[i][1], nubeRecortada[i][2]);
-			particle.color = new BABYLON.Color4(nubeRecortada[i][3], nubeRecortada[i][4], nubeRecortada[i][5], nubeRecortada[i][6]);
-		};
-		for (let i = 2; i < nubeRecortada.length; i++) {
-			pcs.addPoints(1, myfunc);
-		}
-		pcs.buildMeshAsync();
-		document.getElementById("mensaje").style.display = "none";
+	}else {
+		vector = nubeRecortada;
     }
+	pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
+	
+	var myfunc = function (particle, i) {
+		particle.position = new BABYLON.Vector3(vector[i][0], vector[i][1], vector[i][2]);
+		particle.color = new BABYLON.Color4(vector[i][3], vector[i][4], vector[i][5], vector[i][6]);
+		if (!origen) {
+			var y = parseInt((vector[i][0] - min.x) / tamVoxel);
+			var x = parseInt((vector[i][1] - min.y) / tamVoxel);
+			var z = parseInt((vector[i][2] - min.z) / tamVoxel);
+			voxelizacion[y][x][z].push(i);
+		}
+	};
+	for (let i = 2; i < vector.length; i++) {
+		pcs.addPoints(1, myfunc);
+	}
+	pcs.buildMeshAsync();
+	document.getElementById("mensaje").style.display = "none";
+	
 }
 
-/*Función que lee el fichero txt con los puntos y genera un sistema de nube de puntos con los datos de los mismos y lo descarga como glb*/
+
+/*
+ * 
+ * Función que dada la nube de puntos recorta la misma en función de una serie de coordenadas previamente dadas
+ *
+ */
 function recorteParcela(scene) {
 
 	let vector = [];
@@ -202,18 +222,7 @@ function recorteParcela(scene) {
 		target = new BABYLON.Vector3(vector[i][0], vector[i][1], vector[i][2]);
 		if (seleccionPuntos(target) != -1) {
 			nubeRecortada.push(vector[i]);
-			if (vector[i][0] > maxR.x)
-				maxR.x = vector[i][0];
-			if (vector[i][0] < minR.x)
-				minR.x = vector[i][0];
-			if (vector[i][1] < minR.y)
-				minR.y = vector[i][1];
-			if (vector[i][1] > maxR.y)
-				maxR.y = vector[i][1];
-			if (vector[i][2] < minR.z)
-				minR.z = vector[i][2];
-			if (vector[i][2] > maxR.z)
-				maxR.z = vector[i][2];
+			comparar(vector[i], maxR, minR)
 		}
 	}
 
@@ -228,9 +237,7 @@ function recorteParcela(scene) {
 	voxelizar(maxR, minR);
 
 	myfunc = function (particle, i) {
-		nubeRecortada[i][0] -= medR.x;
-		nubeRecortada[i][1] -= medR.y;
-		nubeRecortada[i][2] -= medR.z;
+
 		particle.position = new BABYLON.Vector3(nubeRecortada[i][0], nubeRecortada[i][1], nubeRecortada[i][2]);
 		particle.color = new BABYLON.Color4(nubeRecortada[i][3], nubeRecortada[i][4], nubeRecortada[i][5], nubeRecortada[i][6]);
 		var y = parseInt((nubeRecortada[i][0] - minR.x) / tamVoxel);
@@ -247,7 +254,15 @@ function recorteParcela(scene) {
 
 }
 
+
+/*
+ * Función que realiza el recorte de la parcela pero con el método de voxelización
+ *
+ * coordenadas: Vector con las coordenadas del poligono que contiene el recorte
+ * 
+ */
 function recorteParcelaVoxelizado(scene, coordenadas) {
+	document.getElementById('seleccion').style.display = 'none'
 	let vector = [];
 	if (!recortada) {
 		recortada = true;
@@ -296,18 +311,7 @@ function recorteParcelaVoxelizado(scene, coordenadas) {
 					target = new BABYLON.Vector3(punto[0], punto[1], punto[2]);
 					if (seleccionPuntos(target) != -1) {
 						nubeRecortada.push(vector[voxelizacion[i][x][z][p]]);
-						if (punto[0] > maxR.x)
-							maxR.x = punto[0];
-						if (punto[0] < minR.x)
-							minR.x = punto[0];
-						if (punto[1] < minR.y)
-							minR.y = punto[1];
-						if (punto[1] > maxR.y)
-							maxR.y = punto[1];
-						if (punto[2] < minR.z)
-							minR.z = punto[2];
-						if (punto[2] > maxR.z)
-							maxR.z = punto[2];
+						comparar(vector[voxelizacion[i][x][z][p]], maxR, minR);
 					}
 				}
 			}
@@ -336,21 +340,37 @@ function recorteParcelaVoxelizado(scene, coordenadas) {
 
 }
 
-function comparar(punto) {
-	if (parseFloat(punto[0]) > max.x)
-		max.x = parseFloat(punto[0]);
-	if (parseFloat(punto[0]) < min.x)
-		min.x = parseFloat(punto[0]);
-	if (parseFloat(punto[1]) < min.y)
-		min.y = parseFloat(punto[1]);
-	if (parseFloat(punto[1]) > max.y)
-		max.y = parseFloat(punto[1]);
-	if (parseFloat(punto[2]) < min.z)
-		min.z = parseFloat(punto[2]);
-	if (parseFloat(punto[2]) > max.z)
-		max.z = parseFloat(punto[2]);
+
+/*
+ * Función que realiza la comparación de un punto del espacio con el maximo y minimo de su sistema
+ *
+ * punto: Variable vec3 que almacena los valores x,y,z del punto a comparar
+ * max: Variable vec3 que almacena el máximo a comparar
+ * min: Variable vec3 que almacena el mínimo a comparar
+ *
+ */
+function comparar(punto, max, min) {
+	if (punto[0] > max.x)
+		max.x = punto[0];
+	if (punto[0] < min.x)
+		min.x = punto[0];
+	if (punto[1] < min.y)
+		min.y = punto[1];
+	if (punto[1] > max.y)
+		max.y = punto[1];
+	if (punto[2] < min.z)
+		min.z = punto[2];
+	if (punto[2] > max.z)
+		max.z = punto[2];
 }
 
+
+/*
+ * Función que obtiene las coordenadas del poligono de la parcela de la base de datos
+ *
+ * parcela: Variable string que almacena el identificador de la parcela a renderizar
+ *
+ */
 function obtenerTextura(parcela) {
 	var coordenadas = $.ajax({
 		url: 'Recursos/php/obtenerParcela.php',
@@ -379,37 +399,12 @@ function obtenerTextura(parcela) {
 	medT.x = (maxT.x + minT.x) / 2;
 	medT.y = (maxT.y + minT.y) / 2;
 
-	if (zona != "") {
-		var coordenadas_zona = $.ajax({
-			url: 'Recursos/php/obtenerParcela.php',
-			data: { funcion: 'zona', modelo: parcela, zona: zona },
-			dataType: 'text',
-			async: false
-		}).responseText;
-		coordenadas_zona = coordenadas_zona.split("(")[2].split(")")[0];
-		coordenadas_zona = coordenadas_zona.split(",");
-
-		for (var i = 0; i < coordenadas.length; i++) {
-			if (parseFloat(coordenadas_zona[i].split(" ")[0]) > maxT2.x)
-				maxT2.x = parseFloat(coordenadas_zona[i].split(" ")[0]);
-			if (parseFloat(coordenadas_zona[i].split(" ")[0]) < minT2.x)
-				minT2.x = parseFloat(coordenadas_zona[i].split(" ")[0]);
-			if (parseFloat(coordenadas_zona[i].split(" ")[1]) < minT2y)
-				minT2.y = parseFloat(coordenadas_zona[i].split(" ")[1]);
-			if (parseFloat(coordenadas_zona[i].split(" ")[1]) > maxT2.y)
-				maxT2.y = parseFloat(coordenadas_zona[i].split(" ")[1]);
-		}
-
-		medT.x = (maxT2.x + minT2.x) / 2;
-		medT.y = (maxT2.y + minT2.y) / 2;
-	}
-
 	maxT.x -= medT.x, minT.x -= medT.x;
 	maxT.y -= medT.y, minT.y -= medT.y;
 
 
 	for (var i = 0; i < coordenadas.length; i++) {
-		corners.push(new BABYLON.Vector2(parseFloat(coordenadas[i].split(" ")[0]) - medT.x, parseFloat(coordenadas[i].split(" ")[1]) - medT.y));
+		corners.push(new BABYLON.Vector2(parseFloat(coordenadas[i].split(" ")[0]) - medT.x , parseFloat(coordenadas[i].split(" ")[1]) - medT.y));
 	}
 
 	medT.x = (maxT.x + minT.x) / 2;
@@ -419,21 +414,71 @@ function obtenerTextura(parcela) {
 	coordenadas_textura = corners;
 }
 
-function creacionPoligono(parcela, detectado) {
+
+/*
+ * Función que genera el poligono texturizado correspondiente a 
+ *
+ * parcela: Variable string que almacena el identificador de la parcela a renderizar
+ *
+ */
+function creacionPoligono(parcela, scene) {
 
 	var groundMaterial = new BABYLON.StandardMaterial("ground", escena);
-	if (detectado) {
-		groundMaterial.diffuseTexture = new BABYLON.Texture("Recursos/Scripts/Deteccion_Olivos/Output/OLIVE_DETECTION.jpg", escena);
-	} else {
-		groundMaterial.diffuseTexture = new BABYLON.Texture("Recursos/ortofotos/Marmolejo_O_" + parcela + ".png", escena);
+
+	groundMaterial.diffuseTexture = new BABYLON.Texture("Recursos/ortofotos/Marmolejo_O_" + parcela + ".png", escena);
+	shape = [];
+
+	if (!poligonoCreado) {
+		var factorX = maxT.x - max.x;
+		var factorZ = maxT.y - max.z;
+		maxT.x -= factorX;
+		minT.x -= factorX;
+		maxT.y -= factorZ;
+		minT.y -= factorZ;
+		poligonoCreado = true;
+		for (var i = 0; i < coordenadas_textura.length; i++) {
+			coordenadas_textura[i].x -= factorX;
+			coordenadas_textura[i].z -= factorZ;
+		}
+	}
+	for (var i = 0; i < coordenadas_textura.length; i++) {
+		shape.push(new BABYLON.Vector3(coordenadas_textura[i].x, 0, coordenadas_textura[i].y));
 	}
 
-	const poly_tri = new BABYLON.PolygonMeshBuilder("polytri", coordenadas_textura);
-	polygon = poly_tri.build();
+	holes = [];
+	polygon = BABYLON.Mesh.CreatePolygon("polygon", shape, scene, holes,  true, BABYLON.Mesh.DOUBLESIDE);
 	polygon.material = groundMaterial;
+	var positions = polygon.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+
+	var vertexData = new BABYLON.VertexData();
+	if (nubeExists) {
+		for (var i = 1; i < positions.length; i += 3) {
+			var x = positions[i - 1];
+			var z = positions[i + 1];
+			const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {});
+			sphere.position = new BABYLON.Vector3(x, 0, z);
+			ray = lanzarRayo(sphere);
+			sphere.dispose();
+			voxeles = new Array();
+			rayTraversalSimplificado(ray, voxeles, min, max);
+			var y = obtenerYminima(voxeles);
+			positions[i] = y - 1;
+		}
+	}
+	vertexData.positions = positions;
+	vertexData.indices = polygon.getIndices();
+	vertexData.applyToMesh(polygon);
 }
 
 
+/*
+ * Función que genera los olivos detectados en la textura en la escena
+ *
+ * posiciones: Vector con las posiciones de cada uno de los olivos
+ * limiteX: Valor de factorización para ubicar el olivo en la escena con respecto a la dimensiones de la textura en X
+ * limiteZ: Valor de factorización para ubicar el olivo en la escena con respecto a la dimensiones de la textura en Z
+ *
+ */
 async function posicionamiento(posiciones, limiteX, limiteZ) {
 
 	var factorX = (maxT.x - minT.x) / (parseFloat(limiteX));
@@ -442,6 +487,7 @@ async function posicionamiento(posiciones, limiteX, limiteZ) {
 	for (let i = 0; i < posiciones.length; i++) {
 		const { meshes } = await BABYLON.SceneLoader.ImportMeshAsync("", "Recursos/Modelos/", "tree01.glb", scene);
 		meshes[0].position.x = (posiciones[i].x * factorX) + minT.x;
+		meshes[0].position.y = 10;
 		//Se invierte porque el eje Z esta invertido en BabylonJS
 		meshes[0].position.z = -(posiciones[i].y * factorZ) + maxT.y;
 		meshes[0].scalingDeterminant = 0.6;
@@ -452,22 +498,19 @@ async function posicionamiento(posiciones, limiteX, limiteZ) {
 		meshes[0].getChildMeshes()[0].id = i;
 		meshes[0].getChildMeshes()[0].metadata = "olivo";
 		olivos_deteccion.push(meshes);
-		ray = lanzarRayo(meshes[0]);
-
-		voxeles = new Array();
-		//rayTraversal(ray, voxeles, new BABYLON.Vector3(minT.x, -20, minT.y), new BABYLON.Vector3(maxT.x, 20, maxT.y));
-
-		rayTraversalSimplificado(ray, voxeles, new BABYLON.Vector3(minT.x, -20, minT.y), new BABYLON.Vector3(maxT.x, 20, maxT.y));
-
-		for (var x = 0; x < voxeles.length; x++) {
-			if (voxelesAnalizar.indexOf(voxeles[x]) == -1) {
-				voxelesAnalizar.push(voxeles[x]);
-			}
-		}
 		
 	}
+
+	document.getElementById("procesamientoVisual").style.display = "none";
 }
 
+
+/*
+ * Función que lanza un rayo perpendicular a la superficie del rayo
+ *
+ * olivos: Mesh del olivo del que tiene que salir el rayo 
+ *
+ */
 function lanzarRayo(olivo) {
 	var origin = olivo.position;
 	var length = 100;
@@ -487,6 +530,14 @@ function lanzarRayo(olivo) {
 
 }
 
+
+/*
+ * Función que altera el vector del rayo a lanzar para colocarlo en el sistema de coordenadas adecuado
+ *
+ * vector: Vector a modificar
+ * mesh: Mesh del olivo de la que sale el rayo
+ *
+ */
 function vecToLocal(vector, mesh) {
 	var m = mesh.getWorldMatrix();
 	var v = BABYLON.Vector3.TransformCoordinates(vector, m);
@@ -494,70 +545,98 @@ function vecToLocal(vector, mesh) {
 }
 
 
+/*
+ *
+ *Función que analiza los puntos intersectados de la nube por el proceso de detección y realiza el clustering
+ *
+ */
 function analisisNube() {
-	var puntosOlivos = new Array();
+	for (var i = 0; i < olivos_deteccion.length; i++) {
+		ray = lanzarRayo(olivos_deteccion[i][0]);
 
+		voxeles = new Array();
+		rayTraversalSimplificado(ray, voxeles, min, max);
+		for (var x = 0; x < voxeles.length; x++) {
+			if (voxelesAnalizar.indexOf(voxeles[x]) == -1) {
+				voxelesAnalizar.push(voxeles[x]);
+			}
+		}
+    }
+	var puntosOlivos = new Array();
 	for (var i = 0; i < voxelesAnalizar.length; i++) {
-		for (var x = 0; x < voxelesAnalizar[i].length; x++) {
-			var color = new BABYLON.Color3(voxelesAnalizar[i][x][3] * 255, voxelesAnalizar[i][x][4] * 255, voxelesAnalizar[i][x][5] * 255)
-			if ((color.g - 60) > color.r && (color.g - 60) > color.b)
-				puntosOlivos.push(voxelesAnalizar[i][x]);
+		for (var x = 0; x < voxelizacion[voxelesAnalizar[i].x][voxelesAnalizar[i].y][voxelesAnalizar[i].z].length; x++) {
+			var punto = nube[voxelizacion[voxelesAnalizar[i].x][voxelesAnalizar[i].y][voxelesAnalizar[i].z][x]];
+			var color = new BABYLON.Color3(punto[3] * 255, punto[4] * 255, punto[5] * 255);
+			if (((color.g - 20) > color.r && color.g > color.b) || ((color.g - 20) > color.b && color.g > color.r))
+				puntosOlivos.push(nube[voxelizacion[voxelesAnalizar[i].x][voxelesAnalizar[i].y][voxelesAnalizar[i].z][x]]);
         }
 	}
-	pcs.dispose();
-	var myfunc = function (particle, i) {
-		particle.position = new BABYLON.Vector3(puntosOlivos[i][0], puntosOlivos[i][1], puntosOlivos[i][2]);
-		particle.color = new BABYLON.Color4(puntosOlivos[i][3], puntosOlivos[i][4], puntosOlivos[i][5], puntosOlivos[i][6]);
-	};
+	system["formato"] = "nube";
+	cambioModelo();
 
-	pcs = new BABYLON.PointsCloudSystem("pcs", 1, scene);
-	for (var i = 0; i < puntosOlivos.length; i++) {
-		pcs.addPoints(1, myfunc);
+	var umbralDistancia = 5;
+	var clusters = new Array();
+	var centroides = new Array();
+	clusters.push(new Array());
+	clusters[0].push(puntosOlivos[0]);
+	centroides.push(new Array(puntosOlivos[0][0], puntosOlivos[0][1], puntosOlivos[0][2]));
+
+	//proceso de clustering
+	for (var i = 1; i < puntosOlivos.length; i++) {
+		var minL = Number.MAX_VALUE;
+		var indice = -1;
+		for (var x = 0; x < centroides.length; x++) {
+			distancia_puntos = distancia(puntosOlivos[i], centroides[x]);
+			if (distancia_puntos < minL) {
+				minL = distancia_puntos;
+				indice = x;
+            }
+		}
+		if (minL <= umbralDistancia) {
+			clusters[indice].push(puntosOlivos[i]);
+			centroide = recalculoCentroide(clusters[indice]);
+			centroides[indice] = centroide;
+		} else {
+			clusters.push(new Array());
+			clusters[clusters.length - 1].push(puntosOlivos[i]);
+			centroides.push(new Array(puntosOlivos[i][0], puntosOlivos[i][1], puntosOlivos[i][2]));
+        }
 	}
-	pcs.buildMeshAsync();
-	//var umbralDistancia = 2;
-	//var clusters = new Array();
-	//var centroides = new Array();
-	//clusters.push(new Array());
-	//clusters[0].push(puntosOlivos[0]);
-	//centroides.push(new BABYLON.Vector3(puntosOlivos[0][0], puntosOlivos[0][1], puntosOlivos[0][2]));
 
-	////proceso de clustering
-	//for (var i = 1; i < puntosOlivos.length; i++) {
-	//	var min = FLT_MAX;
-	//	var indice = -1;
-	//	for (var x = 0; x < centroides.length; x++) {
-	//		distancia = distancia(puntosOlivos[i], centroides[x]);
-	//		if (distancia < min) {
-	//			min = distancia;
-	//			indice = x;
- //           }
-	//	}
-	//	if (min <= umbralDistancia) {
-	//		clusters[indice].push(puntosOlivos[i]);
-	//		centroide = recalculoCentroide(clusters[indice]);
-	//		centroides[indice] = centroide;
-	//	} else {
-	//		clusters.push(new Array());
-	//		clusters[clusters.length - 1].push(puntosOlivos[i]);
-	//		centroides.push(new BABYLON.Vector3(puntosOlivos[i][0], puntosOlivos[i][1], puntosOlivos[i][2]));
- //       }
-	//}
-	//console.log(centroides);
-	//console.log(clusters);
+	console.log(centroides);
+
+	for (var i = 0; i < centroides.length; i++) {
+		const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {});
+		sphere.scalingDeterminant = 5;
+		sphere.position = new BABYLON.Vector3(centroides[i][0], centroides[i][1] + 5, centroides[i][2]);
+    }
+
 }
 
+
+/*
+ * Función que calcula la distancia entre dos puntos
+ *
+ * punto: Variable vec3 que almacena los valores x,y,z de un punto
+ * punto_2: Variable vec3 que almacena los valores x,y,z del segundo punto
+ *
+ */
 function distancia(punto, punto_2) {
 
 	var dx = punto[0] - punto_2[0];
-	var dy = punto[1] - punto_2[1];
 	var dz = punto[2] - punto_2[2];
 
-
-	return Math.sqrt(dx * dx + dy * dy + dz * dz);
+	return Math.sqrt(dx * dx + dz * dz);
 
 }
 
+
+/*
+ * Función que recalcula el centroide de un cluster al añadir un elemento
+ * 
+ * cluster: Vector que almacena los puntos ubicados en el cluster
+ *
+ */
 function recalculoCentroide(cluster) {
 
 	var x = y = z = 0;
@@ -571,3 +650,26 @@ function recalculoCentroide(cluster) {
 }
 
 
+/*
+ * Función que obtiene la menor Y para una serie de voxeles
+ *
+ * voxeles: Vector de voxeles a analizar
+ *
+ */
+function obtenerYminima(voxeles) {
+	if (voxeles.length > 0) {
+		var yMin = Number.MAX_VALUE;
+		for (var i = 0; i < voxeles.length; i++) {
+			for (var x = 0; x < voxelizacion[voxeles[i].x][voxeles[i].y][voxeles[i].z].length; x++) {
+				var punto = nube[voxelizacion[voxeles[i].x][voxeles[i].y][voxeles[i].z][x]];
+				if (punto[1] < yMin) {
+					yMin = punto[1];
+				}
+			}
+		}
+		return yMin;
+	} else {
+		return 0;
+
+    }
+}

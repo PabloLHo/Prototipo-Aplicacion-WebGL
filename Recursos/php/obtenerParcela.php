@@ -103,7 +103,6 @@ function datosParcelaSecundario($conexion, $parcela){
 							<td style="text-align: center">'.$filaConsulta["nu_area"].'</td>
 							<td style="text-align: center">'.$filaConsulta["pdte_media"].'</td>
 							<td style="text-align: center">'.$filaConsulta["incidencia"].'</td>
-							<td> <button class="custom-btn btn-5" onclick=irZona("'.$filaConsulta['cd_recinto'].'")>Ir Zona</button></td>
 							
 						</tr>';
 		

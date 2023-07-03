@@ -50,8 +50,6 @@ window.onload = function() {
 
 /* Función encargada de mostrar toda la información relativa a una parcela en función de si el modelo esta en pantalla completa o no se mostrara mas información
    o menos.
-		tablaGen: Muestra la información mas general de una parcela
-		Completar...
 */
 function muestraInfo(){
 	var tablaSecun = $.ajax({
@@ -90,13 +88,8 @@ function muestraInfo(){
 	document.getElementById("fecha_vuelo").innerHTML = fechas[0];
 	document.getElementById("miTabla2").innerHTML = tablaSecun;
 	document.getElementById("miTablaIncidencias").innerHTML = tablaInci;
-	document.getElementById("imagen_altura").src = 'Recursos/mapasAltura/Marmolejo_A_' + nombre_Modelo + '.jpg';
 	document.getElementById("ortoParcela").src = 'Recursos/ortofotos/Marmolejo_O_' + nombre_Modelo + '.png';
 
-}
-
-function irZona(direccion) {
-	location.href = "Modelado.php?modelo=" + nombre_Modelo + "-" + direccion;
 }
 
 
@@ -130,7 +123,15 @@ function imprimir(){
 
 }
 
-function calculoGrafica(nombre, tiempo, ejeY) {
+
+/*
+ * Función que obtiene los datos para la gráfica
+ *
+ * nombre: Variable string que indica el nombre del gráfico
+ * ejeY: Nombre de la leyenda del eje Y
+ *
+ */
+function calculoGrafica(nombre, ejeY) {
 	fechas = [];
 	datos = [];
 	aux = nombre.toLowerCase();
@@ -147,10 +148,19 @@ function calculoGrafica(nombre, tiempo, ejeY) {
 
 }
 
+
+/*
+ * Función que crea la gráfica con chartjs
+ *
+ * nombre: Variable string que indica el nombre del gráfico
+ * ejeY: Nombre de la leyenda del eje Y
+ * fechas: Vector con las fechas de cada datos a mostrar
+ * datos: Vector con los datos del eje a mostrar
+ *
+ */
 function creacionGrafica(nombre, ejeY, fechas, datos){
 
 	const data2 = [];
-	const fechas2 = [];
 
 	for (var i = 0; i < datos.length; i++) {
 		data2.push(parseFloat(datos[i]));
@@ -221,6 +231,13 @@ function creacionGrafica(nombre, ejeY, fechas, datos){
 
 }
 
+
+/*
+ * Función que muestra la gráfica en grande
+ *
+ * id: Variable numérica que indica la gráfica con la que trabajar
+ *
+ */
 function sobresaltar(id) {
 
 	if (Chart.getChart('SobrePuesta')) {
@@ -255,29 +272,45 @@ function sobresaltar(id) {
 }
 
 
-
+/*
+ * 
+ * Función que muestra la sección principal de información
+ *
+ */
 function muestraPrincipal(){
 	document.getElementById("Principal").style.display = "block";
 	document.getElementById("Historico").style.display = "none";
 	document.getElementById("Zonas").style.display = "none";
 }
 
+
+/*
+ *
+ * Función que muestra la sección zonal de información
+ *
+ */
 function muestraZonas(){
 	document.getElementById("Principal").style.display = "none";
 	document.getElementById("Historico").style.display = "none";
 	document.getElementById("Zonas").style.display = "block";
 }
 
+
+/*
+ *
+ * Función que muestra la sección de gráficas e historicos de información
+ *
+ */
 function muestraHistorico() {
 
 	document.getElementById("Principal").style.display = "none";
 	document.getElementById("Historico").style.display = "block";
 	document.getElementById("Zonas").style.display = "none";
 
-	calculoGrafica('Produccion', 'week', "Kg");
-	calculoGrafica("Temperatura" ,'week', "Grados");
-	calculoGrafica("Precipitaciones" ,'week', "L/ha");
-	calculoGrafica("Humedad", 'week', "%");
+	calculoGrafica('Produccion', "Kg");
+	calculoGrafica("Temperatura", "Grados");
+	calculoGrafica("Precipitaciones", "L/ha");
+	calculoGrafica("Humedad", "%");
 
 }
 

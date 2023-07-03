@@ -78,8 +78,6 @@ function mostrarParcelas($conexion){
         if($filaConsulta["nubePuntos"])
             $nube = "SI";
         $altura = "NO";
-        if($filaConsulta["MapaAltura"])
-            $altura = "SI";
 
         if($tipo == "anterior"){
             if($numParcelas < $nivel and $numParcelas >= ($nivel - 10)){
@@ -91,7 +89,6 @@ function mostrarParcelas($conexion){
                                 <td>'.$pdteMedia.'</td>
                                 <td>'.$nube.'</td>
                                 <td>'.$ortofoto.'</td>
-                                <td>'.$altura.'</td>
                                 <td>'.$fechaActualizacion.'</td>
                                 <td>'.$fechaVuelo.'</td>
                                 <td><button class="custom-btn btn-5" onclick=muestraHistorico('.$filaConsulta["id_Parcela"].')> Editar Historico</button></td>
@@ -108,7 +105,6 @@ function mostrarParcelas($conexion){
                                 <td>'.$pdteMedia.'</td>
                                 <td>'.$nube.'</td>
                                 <td>'.$ortofoto.'</td>
-                                <td>'.$altura.'</td>
                                 <td>'.$fechaActualizacion.'</td>
                                 <td>'.$fechaVuelo.'</td>
                                 <td><button class="custom-btn btn-5" onclick=muestraHistorico('.$filaConsulta["id_Parcela"].')> Editar Historico</button></td>
@@ -209,7 +205,7 @@ function mostrarParcela($conexion){
     $filaConsulta2 = $resConsulta2->fetch_array(MYSQLI_BOTH);
 
     if($devuelto > 0)
-        echo $filaConsulta2['provincia'] . "&" . $filaConsulta2['nombre'] . "&" . $filaConsulta['fecha_vuelo'] . "&" . $filaConsulta["ReferenciaCatastral"] . "&" . $filaConsulta4["nubePuntos"] . "&" . $filaConsulta4["ortofoto"] . "&" . $filaConsulta4["MapaAltura"];
+        echo $filaConsulta2['provincia'] . "&" . $filaConsulta2['nombre'] . "&" . $filaConsulta['fecha_vuelo'] . "&" . $filaConsulta["ReferenciaCatastral"] . "&" . $filaConsulta["nubePuntos"] . "&" . $filaConsulta["ortofoto"];
     else
         echo $filaConsulta2['provincia'] . "&" . $filaConsulta2['nombre'] . "& N/A & N/A & N/A & N/A & N/A";
 }
@@ -237,7 +233,7 @@ function actualizarFecha($conexion){
         }
         
     }else{
-        $resConsulta=$conexion->query("INSERT INTO datos_parcela (`id_Parcela`, `ReferenciaCatastral`, `fecha_vuelo`, `fecha_actualizacion`) VALUES (".$parcela.",'".$ref."','".$fecha."','".$fecha_actual."')");
+        $resConsulta=$conexion->query("INSERT INTO datos_parcela (`id_Parcela`, `ReferenciaCatastral`, `fecha_vuelo`, `fecha_actualizacion`,`ortofoto`, `nubePuntos`) VALUES (".$parcela.",'".$ref."','".$fecha."','".$fecha_actual."')");
     }
 
 }
@@ -246,7 +242,7 @@ function actualizarNube($conexion){
 
     $parcela = $_REQUEST["parcela"];
 
-    $resConsulta=$conexion->query("UPDATE geometria_parcela SET nubePuntos = 1 WHERE id_Parcela = '".$parcela."'");
+    $resConsulta=$conexion->query("UPDATE datos_parcela SET nubePuntos = 1 WHERE id_Parcela = '".$parcela."'");
 
 }
 
@@ -254,15 +250,7 @@ function actualizarOrtofoto($conexion){
 
     $parcela = $_REQUEST["parcela"];
 
-    $resConsulta=$conexion->query("UPDATE geometria_parcela SET ortofoto = 1 WHERE id_Parcela = '".$parcela."'");
-
-}
-
-function actualizarMapaAltura($conexion){
-
-    $parcela = $_REQUEST["parcela"];
-
-    $resConsulta=$conexion->query("UPDATE geometria_parcela SET MapaAltura = 1 WHERE id_Parcela = '".$parcela."'");
+    $resConsulta=$conexion->query("UPDATE datos_parcela SET ortofoto = 1 WHERE id_Parcela = '".$parcela."'");
 
 }
 
@@ -273,8 +261,8 @@ function nuevaParcela($conexion){
     $fecha = $_REQUEST["fecha"];
     $fecha_actual = date("Y-m-d");
     if($fecha == ""){
-        $resConsulta=$conexion->query("INSERT INTO datos_parcela (`id_Parcela`, `ReferenciaCatastral`, `fecha_vuelo`, `fecha_actualizacion`) VALUES (".$parcela.",'".$ref."',,'".$fecha_actual."')");
+        $resConsulta=$conexion->query("INSERT INTO datos_parcela (`id_Parcela`, `ReferenciaCatastral`, `fecha_vuelo`, `fecha_actualizacion`,`ortofoto`, `nubePuntos`) VALUES (".$parcela.",'".$ref."',,'".$fecha_actual."')");
     }else{
-        $resConsulta=$conexion->query("INSERT INTO datos_parcela (`id_Parcela`, `ReferenciaCatastral`, `fecha_vuelo`, `fecha_actualizacion`) VALUES (".$parcela.",'".$ref."','".$fecha."','".$fecha_actual."')");
+        $resConsulta=$conexion->query("INSERT INTO datos_parcela (`id_Parcela`, `ReferenciaCatastral`, `fecha_vuelo`, `fecha_actualizacion`,`ortofoto`, `nubePuntos`) VALUES (".$parcela.",'".$ref."','".$fecha."','".$fecha_actual."')");
     }
 }

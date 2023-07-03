@@ -69,25 +69,37 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 			
 		<div id="mensaje" class="info-msg" style="width: 100%; position: absolute">
 			<a>
-				Cargando nube de puntos. Espere a la finalización
+				Cargando nube de puntos. Espere a la finalización.
 			</a>                   
 	    </div>
 
 		<div id="recorte" class="info-msg" style="width: 100%; position: absolute; display: none">
 			<a>
-				Para finalizar el recorte doble clic en el vertice previo al cierre del poligono
+				Establecer un vertice clic, finalizar el recorte doble clic en el vertice previo al cierre del poligono.
 			</a>                   
 	    </div>
 
 		<div id="seleccion" class="info-msg" style="width: 100%; position: absolute; display: none">
 			<a onclick="document.getElementById('seleccion').style.display = 'none'"><i class="fa fa-times "></i>
-				Para recortar usar visión cenital
+				Para recortar usar visión cenital.
+			</a>                   
+	    </div>
+
+		<div id="procesamientoVisual" class="info-msg" style="width: 100%; position: absolute; display: none">
+			<a>
+				Se esta realizando la deteccion de entidades, espere a la finalización para continuar.
 			</a>                   
 	    </div>
 
 		<div id="deteccion" class="info-msg" style="width: 100%; position: absolute; display: none">
 			<a onclick="document.getElementById('deteccion').style.display = 'none'"><i class="fa fa-times "></i>
-				Para la detección usar una capa de información con la textura disponible
+				Para la detección usar una capa de información con la textura disponible.
+			</a>                   
+	    </div>
+
+		<div id="mueveOlivo" class="info-msg" style="width: 100%; position: absolute; display: none">
+			<a onclick="cancelarMovimiento()"><i class="fa fa-times "></i>
+				Clicar en la nueva posición del olivo, pulsa la x para cancelar la operacion.
 			</a>                   
 	    </div>
 

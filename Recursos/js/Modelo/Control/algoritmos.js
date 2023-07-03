@@ -1,7 +1,11 @@
 /*Archivos JS encargado de las operaciones geométricas de la escena*/
 numVoxeles = new BABYLON.Vector3(0, 0, 0);
 
-
+/*
+ * 
+ * Función que genera el poligono de recorte con sus coordenadas
+ *
+ */
 function seleccionPoligonal(scene, camera) {
     const getWorldPoint = () => {
         const point = BABYLON.Vector3.Unproject(
@@ -20,6 +24,7 @@ function seleccionPoligonal(scene, camera) {
     scene.onPointerObservable.add((eventData) => {
 		if (!finSeleccion && seleccionActivo) {
 			document.getElementById("recorte").style.display = "flex";
+			document.getElementById("seleccion").style.display = "none";
 			if (eventData.type === BABYLON.PointerEventTypes.POINTERDOWN) {
 				var mousePoint = getWorldPoint();
 				puntos += 1;
@@ -71,7 +76,11 @@ function seleccionPoligonal(scene, camera) {
 	
 }
 
-
+/*
+ * 
+ * Función que limpia del vector de coordenadas del poligono las coordenadas repetidas
+ *
+ */
 function limpiarCoordenadas(){
 	
 	for(var i = 0; i < coordenadas.length; i++){
@@ -86,7 +95,12 @@ function limpiarCoordenadas(){
 }
 
 
-//Método punto en poligono, se deben recorrer las coordenadas en sentido anti-horario
+/*
+ * Función que genera el algoritmo radial del punto en poligono
+ *
+ * punto: Variable vec3 que almacena los valores x,y,z del punto a comprobar su pertenencia al poligono
+ *
+ */
 function seleccionPuntos(punto) {
 	suma = 0;
 	for( var i = 0; i < coordenadas.length-1; i++){
@@ -110,6 +124,14 @@ function seleccionPuntos(punto) {
 }
 
 
+/*
+ * Función que calcula el ángulo que forma un punto con el segmento de dos vertices del poligono
+ *
+ * punto: Variable vec3 que almacena los valores x,y,z del punto a comprobar su pertenencia al poligono
+ * vertice1: Vertice del poligono de recorte
+ * vertice2: Vertice del poligon de recorte
+ *
+ */
 function calculoAngulo(punto, vertice1, vertice2) {
 	var vector = new BABYLON.Vector3(vertice1.x - punto.x, vertice1.y - punto.y, vertice1.z - punto.z);
 	var vector2 = new BABYLON.Vector3(vertice2.x - punto.x, vertice2.y - punto.y, vertice2.z - punto.z);
@@ -131,86 +153,79 @@ function calculoAngulo(punto, vertice1, vertice2) {
 }
 
 
+/*
+ * Función que calcula la voxelización de una nube de puntos
+ *
+ * maxV: Variable vec3 que almacena los valores máximos en cada eje del modelo
+ * minV: Variable vec3 que almacena los valores mínimos en cada eje del modelo
+ *
+ */
 function voxelizar(maxV, minV) {
 
 	var numVoxelesX = parseInt((maxV.x - minV.x) / tamVoxel) + 1;
 	var numVoxelesY = parseInt((maxV.y - minV.y) / tamVoxel) + 1;
 	var numVoxelesZ = parseInt((maxV.z - minV.z) / tamVoxel) + 1;
-
 	numVoxeles = new BABYLON.Vector3(numVoxelesX, numVoxelesY, numVoxelesZ);
-	voxelizacion = new Array(numVoxelesY);
+	console.log(numVoxeles);
+	var auxX = parseInt(minV.x) - 1;
+	var auxY = parseInt(minV.y) - 1;
+	var auxZ = parseInt(minV.z) - 1;
+
+	voxelizacion = new Array(numVoxelesX);
+	boundingBoxes = new Array(numVoxelesX);
 
 	for (var i = 0; i < numVoxelesX; i++) {
 
 		voxelizacion[i] = new Array(numVoxelesY);
+		boundingBoxes[i] = new Array(numVoxelesY);
 
 		for (var x = 0; x < numVoxelesY; x++) {
 
 			voxelizacion[i][x] = new Array(numVoxelesZ);
+			boundingBoxes[i][x] = new Array(numVoxelesZ);
 
 			for (var z = 0; z < numVoxelesZ; z++) {
 
 				voxelizacion[i][x][z] = new Array();
 
+				const box = BABYLON.MeshBuilder.CreateBox("box", { height: tamVoxel, width: tamVoxel, depth: tamVoxel });
+				box.position = new BABYLON.Vector3(auxX + tamVoxel / 2, auxY + tamVoxel / 2, auxZ + tamVoxel / 2);
+				let parent = new BABYLON.Mesh("parent", scene);
+				box.setParent(parent);
+				
+				let spheremin = box.getBoundingInfo().boundingBox.minimumWorld;
+				let spheremax = box.getBoundingInfo().boundingBox.maximumWorld;
+
+				parent.setBoundingInfo(new BABYLON.BoundingInfo(spheremin, spheremax));
+				boundingBoxes[i][x][z] = parent;
+				box.dispose();
+
+				auxZ += tamVoxel;
 			}
 
+			auxZ = parseInt(minV.z) - 1;
+			auxY += tamVoxel;
 		}
 
+		auxY = parseInt(minV.y) - 1;
+		auxX += tamVoxel;
 	}
 
 }
 
 
-//function voxelizar(maxV, minV) {
-
-//	var numVoxelesX = parseInt((maxV.x - minV.x) / tamVoxel) + 1;
-//	var numVoxelesY = parseInt((maxV.y - minV.y) / tamVoxel) + 1;
-//	var numVoxelesZ = parseInt((maxV.z - minV.z) / tamVoxel) + 1;
-//	numVoxeles = new BABYLON.Vector3(numVoxelesX, numVoxelesY, numVoxelesZ);
-//	console.log(numVoxeles);
-//	var auxX = parseInt(minV.x) - 1;
-//	var auxY = parseInt(minV.y) - 1;
-//	var auxZ = parseInt(minV.z) - 1;
-//	voxelizacion = new Array(numVoxelesX);
-//	boundingBoxes = new Array(numVoxelesX);
-//	for (var i = 0; i < numVoxelesX; i++) {
-//		voxelizacion[i] = new Array(numVoxelesY);
-//		boundingBoxes[i] = new Array(numVoxelesY);
-//		for (var x = 0; x < numVoxelesY; x++) {
-//			voxelizacion[i][x] = new Array(numVoxelesZ);
-//			boundingBoxes[i][x] = new Array(numVoxelesZ);
-//			for (var z = 0; z < numVoxelesZ; z++) {
-//				voxelizacion[i][x][z] = new Array();
-//				const box = BABYLON.MeshBuilder.CreateBox("box", { height: tamVoxel, width: tamVoxel, depth: tamVoxel });
-//				box.position = new BABYLON.Vector3(auxX + tamVoxel / 2, auxY + tamVoxel / 2, auxZ + tamVoxel / 2);
-//				let parent = new BABYLON.Mesh("parent", scene);
-//				box.setParent(parent);
-				
-//				let spheremin = box.getBoundingInfo().boundingBox.minimumWorld;
-//				let spheremax = box.getBoundingInfo().boundingBox.maximumWorld;
-
-//				parent.setBoundingInfo(new BABYLON.BoundingInfo(spheremin, spheremax));
-//				boundingBoxes[i][x][z] = parent.getBoundingInfo().boundingBox;
-//				parent.showBoundingBox = true;
-//				box.dispose();
-//				auxZ += tamVoxel;
-//			}
-//			auxZ = parseInt(minV.z) - 1;
-//			auxY += tamVoxel;
-//		}
-//		auxY = parseInt(minV.y) - 1;
-//		auxX += tamVoxel;
-//	}
-
-//}
-
-
+/*
+ * Función que calcula la intersección rayo-voxelización con funciones nativas de babylon
+ *
+ * ray: Variable interna de Babylon que almacena el rayo lanzado
+ *
+ */
 function nativoBabylon(ray) {
 	voxeles = [];
 	for (var x = 0; x < voxelizacion.length; x++) {
 		for (var y = 0; y < voxelizacion[x].length; y++) {
 			for (var z = 0; z < voxelizacion[x][y].length; z++) {
-				if (ray.intersectsBox(boundingBoxes[x][y][z]))
+				if (ray.intersectsBox(boundingBoxes[x][y][z].getBoundingInfo().boundingBox))
 					voxeles.push(new BABYLON.Vector3(x, y, z));
 			}
 		}
@@ -219,6 +234,16 @@ function nativoBabylon(ray) {
 }
 
 
+/*
+ * Función que calcula la intersección rayo-voxelización con el algoritmo A Fast Voxel Traversal Algorithm for Ray Tracing obtiendo
+ * los voxeles por los que se pasa
+ *
+ * rayo: Variable interna de Babylon que almacena el rayo lanzado
+ * voxeles: Vector de voxeles de la voxelización
+ * min: Variable vec3 que almacena los valores mínimos del modelo
+ * max: Variable vec3 que almacena los valores máximos del modelo
+ *
+ */
 function rayTraversal(rayo, voxeles, min, max) {
 	var tMin;
 	var tMax;
@@ -319,7 +344,44 @@ function rayTraversal(rayo, voxeles, min, max) {
 }
 
 
-function rayBoxIntersection(rayo, t0,t1, min, max) {
+/*
+ * Función que calcula la intersección rayo-voxelización con el algoritmo A Fast Voxel Traversal Algorithm for Ray Tracing obtiendo
+ * los voxeles por los que se pasa pero usando exclusivamente el avance en el eje Y
+ *
+ * rayo: Variable interna de Babylon que almacena el rayo lanzado
+ * voxeles: Vector de voxeles de la voxelización
+ * min: Variable vec3 que almacena los valores mínimos del modelo
+ * max: Variable vec3 que almacena los valores máximos del modelo
+ *
+ */
+function rayTraversalSimplificado(rayo, voxeles, min, max) {
+
+	ray_intersects_grid = rayBoxIntersection(rayo, 0, 1, min, max);
+
+	if (!ray_intersects_grid[0]) return 0;
+
+	current_X_index = Math.max(1,Math.ceil((rayo.origin.x - min.x) / tamVoxel));
+
+	current_Y_index = Math.max(1,Math.ceil((rayo.origin.y - min.y) / tamVoxel));
+
+	current_Z_index = Math.max(1,Math.ceil((rayo.origin.z - min.z) / tamVoxel));
+
+	while ((current_X_index >= 1 && current_Y_index >= 1 && current_Z_index >= 1) && (current_X_index <= numVoxeles.x && current_Y_index <= numVoxeles.y && current_Z_index <= numVoxeles.z)) {
+		voxeles.push(new BABYLON.Vector3(current_X_index - 1, current_Y_index - 1, current_Z_index - 1));
+		current_Y_index += 1;
+	}
+
+	return true;
+}
+
+
+/*
+ * Función que calcula la intersección rayo-voxelización 
+ *
+ * rayo: Variable interna de Babylon que almacena el rayo lanzado
+ *
+ */
+function rayBoxIntersection(rayo, t0, t1, min, max) {
 	var tYMin, tYMax, tZMin, tZMax, tMin, tMax;
 	var x_inv_dir = 1 / rayo.direction.x;
 	if (x_inv_dir >= 0) {
@@ -356,32 +418,4 @@ function rayBoxIntersection(rayo, t0,t1, min, max) {
 	if (tZMax < tMax) tMax = tZMax;
 
 	return new Array((tMin < t1 && tMax > t0), tMin, tMax);
-}
-
-function rayTraversalSimplificado(rayo, voxeles, min, max) {
-
-	ray_intersects_grid = rayBoxIntersection(rayo, 0, 1, min, max);
-
-	if (!ray_intersects_grid[0]) return 0;
-
-	current_X_index = Math.ceil((rayo.origin.x - min.x) / tamVoxel);
-
-	current_Y_index = Math.ceil((rayo.origin.y - min.y) / tamVoxel);
-	var stepY;
-
-	if (ray.direction.y > 0.0) 
-		stepY = 1;
-	else if (ray.direction.y < 0.0)
-		stepY = -1;
-	else
-		stepY = 0;
-
-	current_Z_index = Math.ceil((rayo.origin.z - min.z) / tamVoxel);
-
-	while ((current_X_index >= 1 && current_Y_index >= 1 && current_Z_index >= 1) && (current_X_index <= numVoxeles.x && current_Y_index <= numVoxeles.y && current_Z_index <= numVoxeles.z)) {
-		voxeles.push(new BABYLON.Vector3(current_X_index - 1, current_Y_index - 1, current_Z_index - 1));
-		current_Y_index += stepY;
-	}
-
-	return true;
 }

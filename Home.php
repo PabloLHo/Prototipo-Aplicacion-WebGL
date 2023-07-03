@@ -19,6 +19,7 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 		<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 		
 		<link rel="icon" type="image/x-icon" href="Recursos/imagenes/logo.png">
+		
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" type="text/css" href="Recursos/css/dashboard.css" media="all">
 		<link rel="stylesheet" type="text/css" href="Recursos/css/mensajes.css" media="all">
@@ -41,6 +42,7 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 		<script src="Recursos/js/Externo/Bootstrap/bootstrap.min.js"></script>
 		<script src="Recursos/js/Mapa/ol-layerswitcher.js"></script>
 		
+		<!-- Script para poner los datos de usuario -->
 		<script>
 			window.onload = function() {
 				var datos = $.ajax({
@@ -90,6 +92,7 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 					</div>
 				</nav>
 			</section>
+
 			<!--Mapa --> 
 			<section id="principal">
 				<br><br>
@@ -101,7 +104,7 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 					</a>                   
 				</div>
 				<div style="width: 95%; margin: auto; text-align: right">
-				Activar seleccion parcela: 🫳 &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Pantalla completa: ⤢   &nbsp &nbsp &nbsp &nbsp    Control capas: 
+				Leyenda: &nbsp &nbsp Activar seleccion parcela: 🫳 &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Pantalla completa: ⤢   &nbsp &nbsp &nbsp &nbsp    Control capas: 
 				<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAACE1BMVEX///8A//8AgICA//8AVVVAQID///8rVVVJtttgv98nTmJ2xNgkW1ttyNsmWWZmzNZYxM4gWGgeU2JmzNNr0N1Rwc0eU2VXxdEhV2JqytQeVmMhVmNoydUfVGUgVGQfVGQfVmVqy9hqy9dWw9AfVWRpydVry9YhVmMgVGNUw9BrytchVWRexdGw294gVWQgVmUhVWPd4N6HoaZsy9cfVmQgVGRrytZsy9cgVWQgVWMgVWRsy9YfVWNsy9YgVWVty9YgVWVry9UgVWRsy9Zsy9UfVWRsy9YgVWVty9YgVWRty9Vsy9aM09sgVWRTws/AzM0gVWRtzNYgVWRuy9Zsy9cgVWRGcHxty9bb5ORbxdEgVWRty9bn6OZTws9mydRfxtLX3Nva5eRix9NFcXxOd4JPeINQeIMiVmVUws9Vws9Vw9BXw9BYxNBaxNBbxNBcxdJexdElWWgmWmhjyNRlx9IqXGtoipNpytVqytVryNNrytZsjZUuX210k5t1y9R2zNR3y9V4lp57zth9zdaAnKOGoaeK0NiNpquV09mesrag1tuitbmj1tuj19uktrqr2d2svcCu2d2xwMO63N+7x8nA3uDC3uDFz9DK4eHL4eLN4eIyYnDX5OM5Z3Tb397e4uDf4uHf5uXi5ePi5+Xj5+Xk5+Xm5+Xm6OY6aHXQ19fT4+NfhI1Ww89gx9Nhx9Nsy9ZWw9Dpj2abAAAAWnRSTlMAAQICAwQEBgcIDQ0ODhQZGiAiIyYpKywvNTs+QklPUlNUWWJjaGt0dnd+hIWFh4mNjZCSm6CpsbW2t7nDzNDT1dje5efr7PHy9PT29/j4+Pn5+vr8/f39/f6DPtKwAAABTklEQVR4Xr3QVWPbMBSAUTVFZmZmhhSXMjNvkhwqMzMzMzPDeD+xASvObKePPa+ffHVl8PlsnE0+qPpBuQjVJjno6pZpSKXYl7/bZyFaQxhf98hHDKEppwdWIW1frFnrxSOWHFfWesSEWC6R/P4zOFrix3TzDFLlXRTR8c0fEEJ1/itpo7SVO9Jdr1DVxZ0USyjZsEY5vZfiiAC0UoTGOrm9PZLuRl8X+Dq1HQtoFbJZbv61i+Poblh/97TC7n0neCcK0ETNUrz1/xPHf+DNAW9Ac6t8O8WH3Vp98f5lCaYKAOFZMLyHL4Y0fe319idMNgMMp+zWVSybUed/+/h7I4wRAG1W6XDy4XmjR9HnzvDRZXUAYDFOhC1S/Hh+fIXxen+eO+AKqbs+wAo30zDTDvDxKoJN88sjUzDFAvBzEUGFsnADoIvAJzoh2BZ8sner+Ke/vwECuQAAAABJRU5ErkJggg=="></img>
 				</div>
 				<div id="map" class="map"></div>
@@ -109,7 +112,7 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 
 			</section>		
 				
-			
+			<!-- Información adicional de la aplicación -->
 			<section class="text-center bg-light features-icons container-fluid" style="margin-top:10%">
 				<div>
 					<h2 class="mb-5 tituloMapa">Características del sistema</h2>

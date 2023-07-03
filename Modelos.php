@@ -161,10 +161,11 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
         </div>
     </div>
 			
-	<dialog id="card-parcelas" style="width: 75%">    
-		<div class="modal-header">
-				    <a class="button cross" onclick="document.getElementById('card-parcelas').close(); document.getElementById('aux1').value = '';document.getElementById('aux2').value = '';document.getElementById('aux3').value = ''"></a>
-					<h4 class="modal-title" style="width: auto">Parcela</h4>
+			<dialog id="card-parcelas" style="width: 75%">    
+				<div class="modal-header">
+				    <h4 class="modal-title" style="width: auto">Parcela</h4>
+					<a class="button cross" onclick="document.getElementById('card-parcelas').close(); document.getElementById('aux1').value = '';document.getElementById('aux2').value = '';document.getElementById('aux3').value = ''"></a>
+					
 				</div>
             	<div class="user">
 		            <div class="user-header" id="cabecera">
@@ -192,11 +193,6 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 								<input type="file" id="aux2" name="src-file2" aria-label="Archivo" accept=".png" onChange="ajustarOrto()"><br>
 							<button class="btn btn-primary btn-sm" id="orto" type="button">Descargar</button>
 						</div>
-						<div class="user-info">
-							<span class="user-title">Mapa altura</span>
-								<input type="file" id="aux3" name="src-file3" aria-label="Archivo" accept="image/*" onChange="ajustarAltura()"><br>
-							<button class="btn btn-primary btn-sm" id="altura" type="button">Descargar</button>
-						</div>
 					</form>
                     <button class="btn btn-primary btn-sm" id="guardar" onclick="guardarParcela()">Guardar</button>
 	            </div>
@@ -204,8 +200,9 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 
 			<dialog id="anadir_modelo" style="width: 75%">
                 <div class="modal-header">
-				    <a class="button cross" onclick="document.getElementById('anadir_modelo').close();document.getElementById('aux4').value = '';document.getElementById('aux5').value = '';document.getElementById('aux6').value = ''"></a>
-					<h4 class="modal-title">Modelo</h4>
+				    <h4 class="modal-title">Modelo</h4>
+					<a class="button cross" onclick="document.getElementById('anadir_modelo').close();document.getElementById('aux4').value = '';document.getElementById('aux5').value = '';document.getElementById('aux6').value = ''"></a>
+					
 				</div>
             	<div class="user">
 			        <div class="user-info">
@@ -213,7 +210,6 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 						<select name="tipoModelo" id="tipoModelo">
 							<option value="NubePuntos">Nube Puntos</option>
 							<option value="Ortofoto" >Ortofoto</option>
-							<option value="Combo">Ortofoto + Mapa altura</option>
 							<option value="Triple" selected>Textura + Nube puntos</option>
 						</select>
 			        </div>
@@ -244,10 +240,6 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 			            <span class="user-title">Ortofoto</span>
 				        <input type="file" id="aux5" name="src-file2" aria-label="Archivo" accept=".png" onChange="ajustarOrto2()"><br>
 		            </div>
-		            <div id="form_altura" class="user-info">
-			            <span class="user-title">Mapa altura</span>
-				        <input type="file" id="aux6" name="src-file3" aria-label="Archivo" accept="image/*" onChange="ajustarAltura2()"><br>
-                    </div>
 					</form>
                     <button class="btn btn-primary btn-sm" id="guardar" onclick="incluirModelos()">Guardar</button>
 
@@ -256,8 +248,9 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 
 			<dialog id="historico" style="width: 85%">
 				<div class="modal-header">
-				    <a class="button cross" onclick="document.getElementById('historico').close()"></a>
-					<h4 class="modal-title">Historico</h4>
+				    <h4 class="modal-title">Historico</h4>
+					<a class="button cross" onclick="document.getElementById('historico').close()"></a>
+					
 				</div>
 				<div class="user">
 					<div id="insercion" class="info-msg" style="width: 100%; position: absolute; display: none">
@@ -304,11 +297,12 @@ if( $clave == null || (time() - $_SESSION['tiempo']) > 43200){
 			<dialog id="subirCSV" style="width: 40%">
 
 				<div class="modal-header">
-				    <a class="button cross" onclick="document.getElementById('subirCSV').close(); 
+				    <h4 class="modal-title">Subida CSV</h4>
+					<a class="button cross" onclick="document.getElementById('subirCSV').close(); 
 													document.getElementById('boton_si').style.display = 'flex'; document.getElementById('boton_no').style.display = 'flex';
 													document.getElementById('csvFileInput').style.display = 'none'; document.getElementById('boton_guardar').style.display = 'none';
 													document.getElementById('mensajeAviso').style.display = 'flex'"></a>
-					<h4 class="modal-title">Subida CSV</h4>
+					
 				</div>
 				<br>
 				<div id="ningunDato" class="info-msg" style="width: 100%; display: none">

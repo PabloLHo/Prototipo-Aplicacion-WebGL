@@ -265,9 +265,11 @@ document.getElementsByClassName("ol-zoomslider-thumb")[0].style.height = "10%";
 var boton = document.createElement('button');
 boton.innerHTML = '🫳';
 boton.title = "Selección parcela"
+
 boton.addEventListener('click', function () {
 	seleccion = !seleccion;
 });
+
 var elementoDiv = document.createElement('div');
 elementoDiv.className = 'ol-unselectable ol-control';
 elementoDiv.appendChild(boton);

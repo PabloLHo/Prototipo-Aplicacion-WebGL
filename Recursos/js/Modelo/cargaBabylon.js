@@ -37,10 +37,13 @@ initFunction().then(() => {
 	sceneToRender = scene   
 });
 
+
+
 // Resize
 window.addEventListener("resize", function () {
 	engine.resize();
 });
+
 
 /*Crea la ventana de visualización para una escena
 	modelo: El nombre de la función de visualización a la que llamar
@@ -48,6 +51,8 @@ window.addEventListener("resize", function () {
 const createScene = (modelo) => {
 	return window[modelo](nombre_modelo);
 }
+
+
 
 function inicio() {
 	//Obtenemos el valor de la parcela, olivo o zona a la que queremos ir

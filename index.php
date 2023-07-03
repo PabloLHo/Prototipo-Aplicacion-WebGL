@@ -19,12 +19,12 @@ if( $clave != null &&  (time() - $_SESSION['tiempo']) < 43200){
 		<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
 		<link rel="icon" type="image/x-icon" href="Recursos/imagenes/logo.png">
+		
 		<link rel="stylesheet" type="text/css" href="Recursos/css/login.css" media="all">
 		<link rel="stylesheet" type="text/css" href="Recursos/css/botones.css" media="all">
 		<link rel="stylesheet" type="text/css" href="Recursos/css/responsive.css" media="all">
 		
 		
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
 		<script src="https://assets.babylonjs.com/generated/Assets.js"></script>
 		<script src="https://preview.babylonjs.com/ammo.js"></script>
 		<script src="https://preview.babylonjs.com/cannon.js"></script>
@@ -49,6 +49,7 @@ if( $clave != null &&  (time() - $_SESSION['tiempo']) < 43200){
 		
 	</head>
 
+	<!-- Estilos especificos de la página -->
 	<style>
 		html,body{
 
@@ -66,6 +67,7 @@ if( $clave != null &&  (time() - $_SESSION['tiempo']) < 43200){
 		}
 	</style>
 	
+	<!-- Script de ajuste de tamaño del canvas de la escena -->
 	<script>
 		function cambioTamano(){
 
@@ -83,7 +85,7 @@ if( $clave != null &&  (time() - $_SESSION['tiempo']) < 43200){
 	</script>
   
 	<body>	
-		<!-- Cabecera -->
+		<!-- Formulario inicio de sesión -->
 		<section>
 			<div class="container" id="login">
 				<center>
@@ -103,6 +105,7 @@ if( $clave != null &&  (time() - $_SESSION['tiempo']) < 43200){
 			</div>
 		</section>
 		
+		<!-- Nota TFG -->
 		<section>
 			<div class="container-nombre">
 				<center>
@@ -115,6 +118,7 @@ if( $clave != null &&  (time() - $_SESSION['tiempo']) < 43200){
 			</div>
 		</section>
 		
+		<!-- Escena -->
 		<section id="modelado" >
 			<div>
 				<canvas id="renderCanvas"></canvas>	

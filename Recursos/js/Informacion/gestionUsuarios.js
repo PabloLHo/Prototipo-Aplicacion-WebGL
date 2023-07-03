@@ -1,7 +1,11 @@
 /*Archivos JS encargado de las funciones de la interfaz perfil de usuario*/
 nombreActual = ""
 
-
+/*
+ * 
+ * Función que inicializa los datos del usuario
+ *
+ */
 window.onload = function () {
 	var datos = $.ajax({
 		url: 'Recursos/php/gestionPerfiles.php',
@@ -16,6 +20,12 @@ window.onload = function () {
 	muestraUsuarios();
 }
 
+
+/*
+ * 
+ * Función que muestra los primeros 10 usuarios
+ *
+ */
 function muestraUsuarios() {
 
 	usuarios = $.ajax({
@@ -33,6 +43,13 @@ function muestraUsuarios() {
 
 }
 
+
+/*
+ * Función que muestra los usuarios anteriores a los mostrados a continuación
+ *
+ * numero: Variable entera que ubica el número de usuarios en el que empezar
+ *
+ */
 function anterioresUsuarios(numero) {
 
 	usuarios = $.ajax({
@@ -54,6 +71,14 @@ function anterioresUsuarios(numero) {
 
 }
 
+
+/*
+ * Función que muestra los usuarios siguientes a los mostrados a continuación
+ *
+ * numero: Variable entera que ubica el número de usuarios en el que empezar
+ * total: Variable entera que indica el número total de usuarios de la base de datos
+ *
+ */
 function siguientesUsuarios(numero, total) {
 
 	usuarios = $.ajax({
@@ -74,6 +99,13 @@ function siguientesUsuarios(numero, total) {
 
 }
 
+
+/*
+ * Función que elimina un usuario de la base de datos
+ *
+ * nombre: Variable string que indica el nombre del usuario a eliminar
+ *
+ */
 function eliminarUsuario(nombre) {
 	nombre = nombre.split("/")[0];
 	nombre = nombre.substring(0, nombre.length - 1);
@@ -86,6 +118,13 @@ function eliminarUsuario(nombre) {
 	location.reload();
 }
 
+
+/*
+ * Función que edita un usuario de la base de datos
+ *
+ * nombre: Variable string que indica el nombre del usuario a editar
+ *
+ */
 function editarUsuario(nombre) {
 	document.getElementById('card-usuarios').close();
 	document.getElementById('edicion-card-usuarios').showModal();
@@ -125,6 +164,12 @@ function editarUsuario(nombre) {
 
 }
 
+
+/*
+ * 
+ * Función para guardar los datos del formulario de usuario
+ *
+ */
 function guardarDatos() {
 	if (document.getElementById("mensajeUsuario").style.display == "block") {
 		alert("Formulario incorrecto");
@@ -149,6 +194,12 @@ function guardarDatos() {
 	}
 }
 
+
+/*
+ * 
+ * Función que muestra el formulario para añadir un usuario
+ *
+ */
 function anadirUsuario() {
 	nombreActual = "";
 	document.getElementById('edicion-card-usuarios').showModal()
@@ -193,6 +244,12 @@ function anadirUsuario() {
 
 }
 
+
+/*
+ * 
+ * Función que añade los datos de un usuario a la base de datos
+ *
+ */
 function anadirDatos() {
 	if (document.getElementById("name_user").value == "" || document.getElementById("lastname_user").value == "" || document.getElementById("user_user").value == "" || document.getElementById("psswd_user").value == "" || document.getElementById("npsswd_user").value == "") {
 		alert("Formulario incompleto");
@@ -214,6 +271,12 @@ function anadirDatos() {
 }
 
 
+/*
+ * Función que muestra un usuario
+ *
+ * nombre: Variable string que indica el nombre del usuario a eliminar
+ *
+ */
 function mostrarUsuario(nombre) {
 	var datos = $.ajax({
 		url: 'Recursos/php/gestionPerfiles.php',

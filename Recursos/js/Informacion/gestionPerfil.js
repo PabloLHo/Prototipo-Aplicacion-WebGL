@@ -35,6 +35,12 @@ window.onload = function () {
 
 }
 
+
+/*
+ * 
+ * Función que muestra el perfil de un usuario
+ *
+ */
 function edicionCuenta(){
 	if (document.getElementById("edicionCuenta").innerHTML == "Editar") {
 		document.getElementById("cancelarEdicionCuenta").style.display = "block";
@@ -102,6 +108,12 @@ function edicionCuenta(){
 
 }
 
+
+/*
+ * 
+ * Función que cancela la edición de los datos
+ *
+ */
 function cancelarEdicion() {
 	document.getElementById("cancelarEdicionCuenta").style.display = "none";
 	document.getElementById("edicionCuenta").innerHTML = "Editar";
@@ -122,6 +134,12 @@ function cancelarEdicion() {
 	document.getElementById("muestraPais").style.display = "block";
 }
 
+
+/*
+ * 
+ * Función que comprueba la validez de la foto a subir
+ *
+ */
 function comprobarFoto() {
 	nombre = document.getElementById("foto_comprobar").value.split(".")[document.getElementById("foto_comprobar").value.split(".").length - 1];
 

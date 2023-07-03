@@ -7,6 +7,9 @@ switch($funcion) {
     case 'Datos': 
         datosHistorico($conexion);
         break;
+	case 'DatosRango': 
+        datosHistoricoRango($conexion);
+        break;
 	case 'obtenerTabla':
 		tablaHistorico($conexion);
 		break;
@@ -26,6 +29,20 @@ switch($funcion) {
 
 
 function datosHistorico($conexion){
+	$parcela = $_REQUEST['parcela'];
+	$aspecto = $_REQUEST['aspecto'];
+	$datos = ["Fechas" => array(), "Datos" => array()];
+	/////////////////////// CONSULTA A LA BASE DE DATOS ////////////////////////
+	$resConsulta=$conexion->query("SELECT * FROM ".$aspecto." where id_parcela = '".$parcela."' ORDER BY fecha DESC ");
+	while($filaConsulta = $resConsulta->fetch_array(MYSQLI_BOTH)){
+		array_push($datos["Fechas"],$filaConsulta["fecha"]);
+		array_push($datos["Datos"],$filaConsulta[$aspecto]);
+	}
+	
+	echo json_encode($datos);
+}
+
+function datosHistoricoRango($conexion){
 	$parcela = $_REQUEST['parcela'];
 	$aspecto = $_REQUEST['aspecto'];
 	$numero = $_REQUEST["numero"];

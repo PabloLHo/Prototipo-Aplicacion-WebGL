@@ -1,6 +1,13 @@
 /*Archivos JS encargado de las funciones de la interfaz de muestra del modelado de una parcela*/
 aspectoActual = ""
 
+
+/*
+ * Función que descarga el csv de ejemplo
+ *
+ * bool: Variable booleana que a valor true descarga el archivo
+ *
+ */
 function descargarCSV(bool) {
 	if (bool) {
 		var link = document.createElement('a');
@@ -19,6 +26,13 @@ function descargarCSV(bool) {
 }
 
 
+
+/*
+ * Función que abre el modal para subir un csv
+ *
+ * aspecto: Variable string que almacena el identificador del tipo de datos a subir
+ *
+ */
 function subidaMasiva(aspecto) {
 
 	aspectoActual = aspecto;
@@ -26,6 +40,12 @@ function subidaMasiva(aspecto) {
 
 }
 
+
+/*
+ * 
+ * Función que guarda los datos del csv en la base de datos
+ *
+ */
 function guardarDatosCSV() {
 
 	const file = document.getElementById('csvFileInput').files[0];
